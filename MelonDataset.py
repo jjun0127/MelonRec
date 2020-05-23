@@ -18,11 +18,16 @@ class SongTagDataset(Dataset):
         return len(self.train)
 
     def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+            
+        _id = self.train[idx]['id']
         song_vector = self.song_ids2vec(self.train[idx]['songs'])
         tag_vector = self.tag_ids2vec(self.train[idx]['tags'])
         _input = torch.from_numpy(np.concatenate([song_vector, tag_vector]))
-        return _input
 
+        return _id, _input
+    
     def song_ids2vec(self, songs):
         songs = np.asarray(songs)
         bin_vec = np.zeros(self.num_songs)
@@ -35,3 +40,12 @@ class SongTagDataset(Dataset):
         bin_vec = np.zeros(self.num_tags)
         bin_vec[tags] = 1
         return np.array(bin_vec, dtype=np.float32)
+
+if __name__ == '__main__':
+    playlist_fn = '../data/train.json'
+    
+    std = SongTagDataset('../data/SongTagDataset_train.pkl')
+    dataloader = DataLoader(std, batch_size=128, num_workers=0)
+    for idx, (_ids, _inputs) in enumerate(dataloader):
+        print(idx, len(_idx), _input.size())
+        break

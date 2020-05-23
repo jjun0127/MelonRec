@@ -13,9 +13,7 @@ from Models import Encoder, Decoder
 
 if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    songtag_dataset = SongTagDataset()
-
-    dataloader = DataLoader(songtag_dataset, batch_size=128, num_workers=4)
+    
     # parameters
     num_songs = 707989
     num_tags = 29160
@@ -28,6 +26,10 @@ if __name__ == "__main__":
     epoch = 10
     batch_size = 128
     learning_rate = 0.001
+    num_workers = 4
+    
+    songtag_dataset = SongTagDataset()
+    dataloader = DataLoader(songtag_dataset, batch_size=batch_size, num_workers=num_workers)
 
     encoder = Encoder(D_in, H).to(device)
     decoder = Decoder(D_out, H).to(device)
@@ -71,3 +73,20 @@ if __name__ == "__main__":
 
         torch.save([encoder, decoder], 'model/deno_autoencoder.pkl')
         print(loss)
+    ## Test code
+    for idx, (_id, _input) in enumerate(dataloader):
+        print(idx, end = ' ')
+        with open('results.json','a',encoding='utf-8') as json_file:
+            with torch.no_grad():
+                _input = Variable(_input)
+
+                output = encoder(_input)
+                output = decoder(output)
+
+                _id = list(map(int,_id))
+                songs_ids, tags_ids = binary2ids(_input, output)
+                tags = ids2tags(tags_ids)
+                for i in range(len(_id)):
+                    element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
+                    json.dump(element, json_file, ensure_ascii=False)
+                    json_file.write(',')
