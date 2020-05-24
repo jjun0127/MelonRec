@@ -11,7 +11,8 @@ class SongTagDataset(Dataset):
         else:
             self.train = load_json('arena_data/orig/train.json')
         self.tag_to_id = dict(np.load('arena_data/orig/tag_to_id.npy', allow_pickle=True).item())
-        self.num_songs = 707989
+        self.freq_song_to_id = dict(np.load('arena_data/orig/freq_song_to_id.npy', allow_pickle=True).item())
+        self.num_songs = len(self.freq_song_to_id)
         self.num_tags = 29160
 
     def __len__(self):
@@ -24,9 +25,11 @@ class SongTagDataset(Dataset):
         return _input
 
     def song_ids2vec(self, songs):
+        songs = [self.freq_song_to_id[song] for song in songs if song in self.freq_song_to_id.keys()]
         songs = np.asarray(songs)
         bin_vec = np.zeros(self.num_songs)
-        bin_vec[songs] = 1
+        if len(songs) > 0:
+            bin_vec[songs] = 1
         return np.array(bin_vec, dtype=np.float32)
             
     def tag_ids2vec(self, tags):

@@ -1,24 +1,21 @@
 import torch
 import torch.nn as nn
-import torch.utils as utils
 from torch.autograd import Variable
-import numpy as np
-import pandas as pd
-import pickle
 from tqdm import tqdm
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from MelonDataset import SongTagDataset
 from Models import Encoder, Decoder
 
 
 if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
     songtag_dataset = SongTagDataset()
 
     dataloader = DataLoader(songtag_dataset, batch_size=128, num_workers=4)
     # parameters
-    num_songs = 707989
-    num_tags = 29160
+    num_songs = songtag_dataset.num_songs
+    num_tags = songtag_dataset.num_tags
 
     # hyper parameters
     D_in = num_songs + num_tags
@@ -36,10 +33,6 @@ if __name__ == "__main__":
     loss_func = nn.MSELoss()
     optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
-    # for _ids, _inputs in dataloader:
-    #     print(len(_ids))
-    #     print(_inputs.size())
-    #     break
     try:
         encoder, decoder = torch.load('model/deno_autoencoder.pkl')
         print("\n--------model restored--------\n")
