@@ -5,12 +5,9 @@ import torch
 
 
 class SongTagDataset(Dataset):
-    def __init__(self, file_path=None):
-        if file_path:
-            self.train = load_json(file_path)
-        else:
-            self.train = load_json('arena_data/orig/train.json')
-        self.tag_to_id = dict(np.load('arena_data/orig/tag_to_id.npy', allow_pickle=True).item())
+    def __init__(self, data_file_path, tag_id_file_path):
+        self.train = load_json(data_file_path)
+        self.tag_to_id = dict(np.load(tag_id_file_path, allow_pickle=True).item())
         self.num_songs = 707989
         self.num_tags = 29160
 
@@ -42,10 +39,8 @@ class SongTagDataset(Dataset):
         return np.array(bin_vec, dtype=np.float32)
 
 if __name__ == '__main__':
-    playlist_fn = '../data/train.json'
-    
-    std = SongTagDataset('../data/SongTagDataset_train.pkl')
-    dataloader = DataLoader(std, batch_size=128, num_workers=0)
-    for idx, (_ids, _inputs) in enumerate(dataloader):
-        print(idx, len(_idx), _input.size())
+    std = SongTagDataset()
+    data_loader = DataLoader(std, batch_size=128, num_workers=0)
+    for idx, (_ids, _inputs) in enumerate(data_loader):
+        print(idx, len(_ids), _inputs.size())
         break
