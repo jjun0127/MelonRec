@@ -1,2 +1,7 @@
 .idea/
 res/
+model/
+arena_data/
+__pycache__/
+.ipynb_checkpoints/test-checkpoint.ipynb
+test.ipynb
