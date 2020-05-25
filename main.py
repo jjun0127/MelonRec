@@ -15,9 +15,7 @@ import json
 if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
-<<<<<<< HEAD
-    songtag_dataset = SongTagDataset()
-=======
+
     train_file_path = 'arena_data/orig/train.json'
     test_file_path = 'arena_data/orig/test.json'
     tag_id_file_path = 'arena_data/orig/tag_to_id.npy'
@@ -26,18 +24,12 @@ if __name__ == "__main__":
     if not (os.path.isdir(tag_id_file_path) & os.path.isdir(id_tag_file_path)):
         tags_ids_convert(train_file_path, tag_id_file_path, id_tag_file_path)
     id_to_tag_dict = dict(np.load(id_tag_file_path, allow_pickle=True).item())
->>>>>>> branch_test
 
-    ##train_code
     train_dataset = SongTagDataset(train_file_path, tag_id_file_path)
+
     # parameters
-<<<<<<< HEAD
-    num_songs = songtag_dataset.num_songs
-    num_tags = songtag_dataset.num_tags
-=======
     num_songs = train_dataset.num_songs
     num_tags = train_dataset.num_tags
->>>>>>> branch_test
 
     # hyper parameters
     D_in = num_songs + num_tags
@@ -92,7 +84,7 @@ if __name__ == "__main__":
         print(loss)
     print('train completed')
           
-    ## Test code
+    ## test
     test_dataset = SongTagDataset(test_file_path, tag_id_file_path)
     data_loader = DataLoader(test_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
     encoder, decoder = torch.load('model/deno_autoencoder.pkl')
