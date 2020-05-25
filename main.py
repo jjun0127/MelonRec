@@ -14,15 +14,21 @@ import json
 
 if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    # device = torch.device('cpu')
     train_file_path = 'arena_data/orig/train.json'
     test_file_path = 'arena_data/orig/test.json'
     tag_id_file_path = 'arena_data/orig/tag_to_id.npy'
     id_tag_file_path = 'arena_data/orig/id_to_file.npy'
 
+    if not (os.path.isdir(tag_id_file_path) & os.path.isdir(id_tag_file_path)):
+        tags_ids_convert(train_file_path, tag_id_file_path, id_tag_file_path)
+    id_to_tag_dict = dict(np.load(id_tag_file_path, allow_pickle=True).item())
+
+    ##train_code
+    train_dataset = SongTagDataset(train_file_path, tag_id_file_path)
     # parameters
-    num_songs = 707989
-    num_tags = 29160
+    num_songs = train_dataset.num_songs
+    num_tags = train_dataset.num_tags
 
     # hyper parameters
     D_in = num_songs + num_tags
@@ -34,12 +40,7 @@ if __name__ == "__main__":
     learning_rate = 0.001
     num_workers = 4
 
-    if not (os.path.isdir(tag_id_file_path) & os.path.isdir(id_tag_file_path)):
-        tags_ids_convert(train_file_path, tag_id_file_path, id_tag_file_path)
-    id_to_tag_dict = dict(np.load(id_tag_file_path, allow_pickle=True).item())
-
-    ##train_code
-    train_dataset = SongTagDataset(train_file_path, tag_id_file_path)
+    #train
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
     encoder = Encoder(D_in, H).to(device)
@@ -49,15 +50,11 @@ if __name__ == "__main__":
     loss_func = nn.MSELoss()
     optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
-    # for _ids, _inputs in data_loader:
-    #     print(len(_ids))
-    #     print(_inputs.size())
-    #     break
     try:
         encoder, decoder = torch.load('model/deno_autoencoder.pkl')
         print("\n--------model restored--------\n")
     except:
-        print("\n--------model not restored--------\n")
+        print("\n--------model nost restored--------\n")
         pass
 
     for i in range(epoch):
