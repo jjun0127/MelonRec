@@ -21,7 +21,7 @@ if __name__ == "__main__":
     tag_id_file_path = 'arena_data/orig/tag_to_id.npy'
     id_tag_file_path = 'arena_data/orig/id_to_file.npy'
 
-    if not (os.path.isdir(tag_id_file_path) & os.path.isdir(id_tag_file_path)):
+    if not (os.path.exists(tag_id_file_path) & os.path.exists(id_tag_file_path)):
         tags_ids_convert(train_file_path, tag_id_file_path, id_tag_file_path)
     id_to_tag_dict = dict(np.load(id_tag_file_path, allow_pickle=True).item())
 
