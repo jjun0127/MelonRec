@@ -29,9 +29,11 @@ def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
     return True
 
 
-def binary2ids(_input, output, num_songs):
+def binary2ids(_input, output, num_songs, freq_song2id_dict):
     _input = _input.detach().numpy()
     output = output.detach().numpy()
+
+    to_id = lambda x: [freq_song2id_dict[_x] for _x in x]
 
     output -= _input
     songs_output, tags_output = np.split(output, [num_songs], axis=1)
@@ -39,7 +41,7 @@ def binary2ids(_input, output, num_songs):
     songs_idxes = songs_output.argsort(axis=1)[:, ::-1][:, :100]
     tags_idxes = tags_output.argsort(axis=1)[:, ::-1][:, :10]
 
-    return songs_idxes.tolist(), tags_idxes
+    return list(map(to_id, songs_idxes)), tags_idxes
 
 
 def ids2tags(tags_ids, id_to_tag_dict):

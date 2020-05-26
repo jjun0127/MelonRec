@@ -25,8 +25,10 @@ def test_model(test_file_path, gt_file_path, pred_file_path, tag2id_file_path, i
     batch_size = 128
     num_workers = 4
 
-    freq_song_to_id = dict(np.load('arena_data/orig/freq_song_to_id.npy', allow_pickle=True).item())
-    num_songs = len(freq_song_to_id)
+
+    id2freq_song_dict = dict(np.load('arena_data/orig/id_to_freq_song.npy', allow_pickle=True).item())
+    freq_song2id = dict(np.load('arena_data/orig/freq_song_to_id.npy', allow_pickle=True).item())
+    num_songs = len(freq_song2id)
 
     data_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=num_workers)
     encoder, decoder = torch.load('model/deno_autoencoder.pkl')
@@ -46,7 +48,7 @@ def test_model(test_file_path, gt_file_path, pred_file_path, tag2id_file_path, i
                 output = decoder(_output)
 
                 _id = list(map(int, _id))
-                songs_ids, tags_ids = binary2ids(_input, output, num_songs)
+                songs_ids, tags_ids = binary2ids(_input, output, num_songs, id2freq_song_dict)
                 tags = ids2tags(tags_ids, id_to_tag_dict)
                 for i in range(len(_id)):
                     element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}

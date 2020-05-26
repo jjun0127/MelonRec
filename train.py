@@ -17,7 +17,8 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
     # device = torch.device('cpu')
 
     train_dataset = SongTagDataset(train_file_path, tag2id_file_path)
-    id_to_tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
+    id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
+    id2freq_song_dict = dict(np.load('arena_data/orig/id_to_freq_song.npy', allow_pickle=True).item())
 
     # parameters
     num_songs = train_dataset.num_songs
@@ -79,8 +80,8 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
                     running_loss = 0.0
 
                 _id = list(map(int, _id))
-                songs_ids, tags_ids = binary2ids(_input, output, num_songs)
-                tags = ids2tags(tags_ids, id_to_tag_dict)
+                songs_ids, tags_ids = binary2ids(_input, output, num_songs, id2freq_song_dict)
+                tags = ids2tags(tags_ids, id2tag_dict)
                 for i in range(len(_id)):
                     element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
                     if not (idx == 0 and i == 0):
