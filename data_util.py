@@ -34,10 +34,10 @@ def binary2ids(_input, output, num_songs):
     output -= _input
     songs_output, tags_output = np.split(output, [num_songs], axis=1)
 
-    songs_ids = songs_output.argsort(axis=1)[:,::-1][:,:100]
-    tags_ids = tags_output.argsort(axis=1)[:,::-1][:,:10]
+    songs_idxes = songs_output.argsort(axis=1)[:, ::-1][:, :100]
+    tags_idxes = tags_output.argsort(axis=1)[:, ::-1][:, :10]
 
-    return songs_ids.tolist(), tags_ids
+    return songs_idxes.tolist(), tags_idxes
 
 
 def ids2tags(tags_ids, id_to_tag_dict):
