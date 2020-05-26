@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
+import collections
+from arena_util import load_json
 
 
 def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
@@ -44,3 +46,22 @@ def ids2tags(tags_ids, id_to_tag_dict):
     to_id = lambda x: [id_to_tag_dict[_x] for _x in x]
 
     return list(map(to_id, tags_ids))
+
+
+def save_freq_song_id_dict():
+    # freq_song_to_id, id_to_freq_song
+    train = load_json('arena_data/orig/train.json')
+
+    song_counter = collections.Counter()
+    for play_list in train:
+        song_counter.update(play_list['songs'])
+
+    selected_songs = []
+    for k, v in song_counter.items():
+        if v > 1:
+            selected_songs.append(k)
+
+    freq_song_to_id = {song: id for id, song in enumerate(selected_songs)}
+    np.save('arena_data/orig/freq_song_to_id', freq_song_to_id)
+    id_to_freq_song = {v: k for k, v in freq_song_to_id.items()}
+    np.save('arena_data/orig/id_to_freq_song', id_to_freq_song)
