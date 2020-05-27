@@ -31,7 +31,9 @@ def test_model(test_file_path, gt_file_path, pred_file_path, tag2id_file_path, i
     num_songs = len(freq_song2id)
 
     data_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=num_workers)
-    encoder, decoder = torch.load('model/deno_autoencoder.pkl')
+
+    model_file_path = 'model/autoencoder_bce.pkl'
+    encoder, decoder = torch.load(model_file_path)
 
     evaluator = ArenaEvaluator()
 

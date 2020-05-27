@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import collections
+import torch
 from arena_util import load_json
 
 
@@ -30,9 +31,13 @@ def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
 
 
 def binary2ids(_input, output, num_songs, freq_song2id_dict, istrain=False):
-    _input = _input.detach().numpy()
-    output = output.detach().numpy()
-
+    if torch.cuda.is_available():
+        _input = _input.cpu().detach().numpy()
+        output = output.cpu().detach().numpy()
+    else:
+        _input = _input.detach().numpy()
+        output = output.detach().numpy()
+        
     to_id = lambda x: [freq_song2id_dict[_x] for _x in x]
 
     if not istrain:

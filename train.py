@@ -12,6 +12,7 @@ from data_util import *
 import json
 from evaluate import ArenaEvaluator
 
+
 def train(train_file_path, tag2id_file_path, id2tag_file_path):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # device = torch.device('cpu')
@@ -66,7 +67,7 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
             for idx, (_id, _input) in tqdm(enumerate(data_loader)):
                 _input = Variable(_input)
                 if device.type == 'cuda':
-                    _inputs = _inputs.cuda()
+                    _input = _input.cuda()
 
                 optimizer.zero_grad()
 
