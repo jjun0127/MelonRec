@@ -29,10 +29,10 @@ class Encoder(nn.Module):
     
 class Decoder(nn.Module):
     def __init__(self, D_out, H):
-        super(Decoder,self).__init__()
+        super(Decoder, self).__init__()
         self.layer = nn.Sequential(
-                        nn.Linear(H,D_out),
-                        nn.ReLU())
+                        nn.Linear(H, D_out),
+                        nn.Sigmoid())
         
     def forward(self,x):
         out = self.layer(x)

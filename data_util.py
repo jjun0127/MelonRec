@@ -29,13 +29,15 @@ def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
     return True
 
 
-def binary2ids(_input, output, num_songs, freq_song2id_dict):
+def binary2ids(_input, output, num_songs, freq_song2id_dict, istrain=False):
     _input = _input.detach().numpy()
     output = output.detach().numpy()
 
     to_id = lambda x: [freq_song2id_dict[_x] for _x in x]
 
-    output -= _input
+    if not istrain:
+        output -= _input
+
     songs_output, tags_output = np.split(output, [num_songs], axis=1)
 
     songs_idxes = songs_output.argsort(axis=1)[:, ::-1][:, :100]
@@ -63,7 +65,7 @@ def save_freq_song_id_dict():
         if v > 1:
             selected_songs.append(k)
 
-    freq_song_to_id = {song: id for id, song in enumerate(selected_songs)}
+    freq_song_to_id = {song: _id for _id, song in enumerate(selected_songs)}
     np.save('arena_data/orig/freq_song_to_id', freq_song_to_id)
     id_to_freq_song = {v: k for k, v in freq_song_to_id.items()}
     np.save('arena_data/orig/id_to_freq_song', id_to_freq_song)

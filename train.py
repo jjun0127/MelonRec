@@ -40,12 +40,15 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
     encoder = Encoder(D_in, H).to(device)
     decoder = Decoder(D_out, H).to(device)
 
+    printevery = 2
+    model_file_path = 'model/autoencoder_bce.pkl'
+
     parameters = list(encoder.parameters()) + list(decoder.parameters())
-    loss_func = nn.MSELoss()
+    loss_func = nn.BCELoss()
     optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
     try:
-        encoder, decoder = torch.load('model/deno_autoencoder.pkl')
+        encoder, decoder = torch.load(model_file_path)
         print("\n--------model restored--------\n")
     except:
         print("\n--------model not restored--------\n")
@@ -75,12 +78,9 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
                 optimizer.step()
 
                 running_loss += loss.item()
-                if epoch % 100 == 99:
-                    print('[%d] loss: %.3f' %(epoch + 1, running_loss / 100))
-                    running_loss = 0.0
 
                 _id = list(map(int, _id))
-                songs_ids, tags_ids = binary2ids(_input, output, num_songs, id2freq_song_dict)
+                songs_ids, tags_ids = binary2ids(_input, output, num_songs, id2freq_song_dict, istrain=True)
                 tags = ids2tags(tags_ids, id2tag_dict)
                 for i in range(len(_id)):
                     element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
@@ -88,9 +88,12 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path):
                         json_file.write(',')
                     json.dump(element, json_file, ensure_ascii=False)
             json_file.write(']')
+            if epoch % printevery == 0:
+                print('%d %d%% %.4f' % (epoch, epoch / epochs * 100, running_loss))
+                running_loss = 0.0
         evaluator.evaluate(train_file_path, temp_fn)
         os.remove(temp_fn)
-        torch.save([encoder, decoder], 'model/deno_autoencoder.pkl')
+        torch.save([encoder, decoder], model_file_path)
 
 
 if __name__ == "__main__":
