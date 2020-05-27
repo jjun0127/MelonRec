@@ -30,7 +30,7 @@ def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
     return True
 
 
-def binary2ids(_input, output, num_songs, freq_song2id_dict, istrain=False):
+def binary2ids(_input, output, num_songs, freq_song2id_dict, id2tag_dict, istrain=False):
     if torch.cuda.is_available():
         _input = _input.cpu().detach().numpy()
         output = output.cpu().detach().numpy()
@@ -38,7 +38,8 @@ def binary2ids(_input, output, num_songs, freq_song2id_dict, istrain=False):
         _input = _input.detach().numpy()
         output = output.detach().numpy()
         
-    to_id = lambda x: [freq_song2id_dict[_x] for _x in x]
+    to_song_id = lambda x: [freq_song2id_dict[_x] for _x in x]
+    to_dict_id = lambda x: [id2tag_dict[_x] for _x in x]
 
     if not istrain:
         output -= _input
@@ -48,13 +49,7 @@ def binary2ids(_input, output, num_songs, freq_song2id_dict, istrain=False):
     songs_idxes = songs_output.argsort(axis=1)[:, ::-1][:, :100]
     tags_idxes = tags_output.argsort(axis=1)[:, ::-1][:, :10]
 
-    return list(map(to_id, songs_idxes)), tags_idxes
-
-
-def ids2tags(tags_ids, id_to_tag_dict):
-    to_id = lambda x: [id_to_tag_dict[_x] for _x in x]
-
-    return list(map(to_id, tags_ids))
+    return list(map(to_song_id, songs_idxes)), list(map(to_dict_id, tags_idxes))
 
 
 def save_freq_song_id_dict():

@@ -1,40 +1,19 @@
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 
-class Encoder(nn.Module):
-    def __init__(self, D_in, H):
-        super(Encoder,self).__init__()
-        self.layer = nn.Sequential(
+
+class AutoEncoder(nn.Module):
+    def __init__(self, D_in, H, D_out):
+        super(AutoEncoder, self).__init__()
+        self.encoder = nn.Sequential(
                         nn.Linear(D_in, H),
                         nn.ReLU())
-        
-                
-    def forward(self,x):
-        out = self.layer(x)
-        return out
-    
-# class DenoisingEncoder(nn.Module):
-#     def __init__(self, D_in, H):
-#         super(Encoder,self).__init__()
-#         self.layer = nn.Sequential(
-#                         nn.Linear(D_in, H),
-#                         nn.ReLU())
-#
-#
-#     def forward(self,x):
-#         size = x.size()
-#         out = self.layer(x)
-#         out = out.view(size[0], -1)
-#         return out
-    
-class Decoder(nn.Module):
-    def __init__(self, D_out, H):
-        super(Decoder, self).__init__()
-        self.layer = nn.Sequential(
+        self.decoder = nn.Sequential(
                         nn.Linear(H, D_out),
-                        nn.Sigmoid())
-        
-    def forward(self,x):
-        out = self.layer(x)
-        return out
+                        nn.Softmax())
 
+    def forward(self, x):
+        out_encoder = self.encoder(x)
+        out_decoder = self.decoder(out_encoder)
+        return out_decoder
