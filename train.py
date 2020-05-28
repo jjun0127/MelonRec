@@ -2,6 +2,7 @@
 
 import os
 import torch
+import argparse
 import torch.nn as nn
 from torch.autograd import Variable
 from tqdm import tqdm
@@ -28,13 +29,7 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path, question_file_pat
 
     # hyper parameters
     D_in = num_songs + num_tags
-    H = 100
     D_out = num_songs + num_tags
-
-    epochs = 10
-    batch_size = 256
-    learning_rate = 0.001
-    num_workers = 4
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
@@ -63,7 +58,7 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path, question_file_pat
         print()
         print('epoch: ', epoch)
         running_loss = 0.0
-        for idx, (_id, _input) in tqdm(enumerate(data_loader), desc='training'):
+        for idx, (_id, _input) in enumerate(tqdm(data_loader, desc='training')):
             _input = Variable(_input)
             if device.type == 'cuda':
                 _input = _input.cuda()
@@ -104,6 +99,22 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path, question_file_pat
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=100)
+    parser.add_argument('-epochs', type=int, help="total epochs", default=10)
+    parser.add_argument('-batch_size', type=int, help="batch size", default=256)
+    parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.001)
+    parser.add_argument('-num_workers', type=int, help="num workers", default=4)
+
+    args = parser.parse_args()
+    print(args)
+
+    H = args.dimension
+    epochs = args.epochs
+    batch_size = args.batch_size
+    learning_rate = args.learning_rate
+    num_workers = args.num_workers
+
     train_file_path = 'arena_data/orig/train.json'
 
     question_file_path = 'arena_data/questions/sample_val.json'
