@@ -35,7 +35,7 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path, question_file_pat
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
     qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
-    autoencoder = AutoEncoder(D_in, H, D_out).to(device)
+    autoencoder = AutoEncoder(D_in, H, D_out, dropout=dropout).to(device)
 
     testevery = 5
 
@@ -79,7 +79,7 @@ def train(train_file_path, tag2id_file_path, id2tag_file_path, question_file_pat
 
         if epoch % testevery == 0:
             elements = []
-            for idx, (_id, _input) in tqdm(enumerate(qestion_data_loader), desc='testing...'):
+            for idx, (_id, _input) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
                 with torch.no_grad():
                     _input = Variable(_input)
                     if device.type == 'cuda':
@@ -104,6 +104,7 @@ if __name__ == "__main__":
     parser.add_argument('-epochs', type=int, help="total epochs", default=10)
     parser.add_argument('-batch_size', type=int, help="batch size", default=256)
     parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.001)
+    parser.add_argument('-dropout', type=float, help="dropout", default=0.0)
     parser.add_argument('-num_workers', type=int, help="num workers", default=4)
 
     args = parser.parse_args()
@@ -113,6 +114,7 @@ if __name__ == "__main__":
     epochs = args.epochs
     batch_size = args.batch_size
     learning_rate = args.learning_rate
+    dropout = args.dropout
     num_workers = args.num_workers
 
     train_file_path = 'arena_data/orig/train.json'
@@ -123,7 +125,7 @@ if __name__ == "__main__":
     tag2id_file_path = 'arena_data/orig/tag_to_id.npy'
     id2tag_file_path = 'arena_data/orig/id_to_file.npy'
 
-    model_file_path = 'model/autoencoder_bce.pkl'
+    model_file_path = 'model/autoencoder_bce_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
 
     if not (os.path.exists(tag2id_file_path) & os.path.exists(id2tag_file_path)):
         tags_ids_convert(train_file_path, tag2id_file_path, id2tag_file_path)
