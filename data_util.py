@@ -69,3 +69,50 @@ def save_freq_song_id_dict():
     np.save('arena_data/orig/freq_song_to_id', freq_song_to_id)
     id_to_freq_song = {v: k for k, v in freq_song_to_id.items()}
     np.save('arena_data/orig/id_to_freq_song', id_to_freq_song)
+
+
+def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
+    def _wv_tags(tags_list):
+        taS = []
+        for tags in tags_list:
+            taS.append(' '.join(tags))
+
+        return(taS)
+
+    def _wv_genre(genre):
+        genre_dict = dict()
+        for code, value in genre:
+            code_num = int(code[2:])
+            if not code_num % 100:
+                cur_genre = value
+                genre_dict[cur_genre] = []
+            else:
+                value = value.split('/')
+                genre_dict[cur_genre].append(value)
+        genre_sentences = []
+        for key in genre_dict:
+            sub_list = genre_dict[key]
+            key = ' '.join(key.split('/'))
+            if not len(sub_list):
+                continue
+            for sub in sub_list:
+                genre_sentences.append(key+' '+sub)
+        return genre_sentences
+
+    try:
+        playlist_df = pd.read_json(playlist_file_path)
+        genre_df = pd.read_json(genre_file_path,orient='index').reset_index()
+        genre_df.columns = ['code','value']
+        tiS = playlist_df['plylst_title'].tolist()
+        taS = _wv_tags(playlist_df['tags'].to_numpy())
+        geS = _wv_genre(genre_df.to_numpy())
+
+        sentences = tiS + taS + geS
+        with open(result_file_path, 'w', encoding='utf8') as f:
+            for sentence in sentences:
+                f.write(sentence+'\n')
+    except Exception as e:
+        print(e)
+        return False
+    print('{} is generated'.format(result_file_path))
+    return sentences
