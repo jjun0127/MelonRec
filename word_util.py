@@ -25,7 +25,7 @@ def train_tokenizer(input_file_path, mode_file_path, vocab_size, model_type):
     print("tokenizer {} is generated".format(mode_file_path))
 
 
-def get_tokens(sp, sentences):
+def get_tokens_from_sentences(sp, sentences):
     tokenized_sentences = []
     for sentence in sentences:
         tokens = sp.EncodeAsPieces(sentence)
@@ -38,6 +38,16 @@ def get_tokens(sp, sentences):
             tokenized_sentences.append(new_tokens)
 
     return tokenized_sentences
+
+
+def get_tokens_from_sentence(sp, sentence):
+    new_tokens = []
+    tokens = sp.EncodeAsPieces(sentence)
+    for token in tokens:
+        token = token.replace("▁", "")
+        if len(token) > 1:
+            new_tokens.append(token)
+    return new_tokens
 
 
 class string2vec():
@@ -62,7 +72,7 @@ class string2vec():
 
         df.to_csv(emb_fn,index=False)
 
-    def save_model(self,md_fn):
+    def save_model(self, md_fn):
         self.model.save(md_fn)
         print("word embedding model {} is trained".format(md_fn))
 
@@ -87,10 +97,10 @@ if __name__ == '__main__':
     sp = spm.SentencePieceProcessor()
     sp.Load(tokenizer_file_path)
 
-    tokenized_sentences = get_tokens(sp, sentences)
+    tokenized_sentences = get_tokens_from_sentences(sp, sentences)
 
     emb_fn = '../data/word_embeddings_{}_{}.csv'.format(method, vocab_size)
-    model_fn = '../model/w2v_{}_{}.model'.format(method, vocab_size)
+    model_fn = '../model/wv/w2v_{}_{}.model'.format(method, vocab_size)
 
     model = string2vec(tokenized_sentences, size=200, window=5, min_count=1, workers=8, sg=1, hs=1)
     model.save_embeddings(emb_fn)
