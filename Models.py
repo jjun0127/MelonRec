@@ -19,3 +19,5 @@ class AutoEncoder(nn.Module):
         out_encoder = self.encoder(x)
         out_decoder = self.decoder(out_encoder)
         return out_decoder
+
+    
