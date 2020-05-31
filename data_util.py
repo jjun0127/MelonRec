@@ -87,7 +87,7 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
                 cur_genre = value
                 genre_dict[cur_genre] = []
             else:
-                value = value.split('/')
+                value = ' '.join(value.split('/'))
                 genre_dict[cur_genre].append(value)
         genre_sentences = []
         for key in genre_dict:
@@ -101,8 +101,7 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
 
     try:
         playlist_df = pd.read_json(playlist_file_path)
-        genre_df = pd.read_json(genre_file_path,orient='index').reset_index()
-        genre_df.columns = ['code','value']
+        genre_df = pd.read_json(genre_file_path, orient='index').reset_index()
         tiS = playlist_df['plylst_title'].tolist()
         taS = _wv_tags(playlist_df['tags'].to_numpy())
         geS = _wv_genre(genre_df.to_numpy())
@@ -112,7 +111,7 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
             for sentence in sentences:
                 f.write(sentence+'\n')
     except Exception as e:
-        print(e)
+        print(e.with_traceback())
         return False
     print('{} is generated'.format(result_file_path))
     return sentences
