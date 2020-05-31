@@ -2,6 +2,7 @@
 
 import os
 import sys
+import argparse
 from torch.autograd import Variable
 from tqdm import tqdm
 from torch.utils.data import DataLoader
@@ -40,7 +41,7 @@ def test_model(question_file_path, answer_file_path, pred_file_path, tag2id_file
         os.remove(pred_file_path)
 
     elements = []
-    for idx, (_id, _input) in tqdm(enumerate(question_data_loader), desc='testing...'):
+    for idx, (_id, _input) in enumerate(tqdm(question_data_loader, desc='testing...')):
         with torch.no_grad():
             _input = Variable(_input)
             if device.type == 'cuda':
@@ -55,10 +56,26 @@ def test_model(question_file_path, answer_file_path, pred_file_path, tag2id_file
                 elements.append(element)
 
     write_json(elements, pred_file_path)
-    evaluator.evaluate(answer_file_path, pred_file_path)
+    evaluator.evaluate(answer_file_path, pred_file_path, model_file_path)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=100)
+    parser.add_argument('-batch_size', type=int, help="batch size", default=256)
+    parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.001)
+    parser.add_argument('-dropout', type=float, help="dropout", default=0.0)
+    parser.add_argument('-num_workers', type=int, help="num workers", default=4)
+
+    args = parser.parse_args()
+    print(args)
+
+    H = args.dimension
+    batch_size = args.batch_size
+    learning_rate = args.learning_rate
+    dropout = args.dropout
+    num_workers = args.num_workers
+
     question_file_path = 'arena_data/questions/val.json'
     answer_file_path = 'arena_data/answers/val.json'
 
@@ -66,7 +83,7 @@ if __name__ == "__main__":
     id2tag_file_path = 'arena_data/orig/id_to_file.npy'
 
     pred_file_path = 'arena_data/answers/pred.json'
-    model_file_path = 'model/autoencoder_bce.pkl'
+    model_file_path = 'model/autoencoder_bce_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
 
     if not (os.path.exists(tag2id_file_path) & os.path.exists(id2tag_file_path)):
         print('no tag_id file')

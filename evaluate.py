@@ -61,12 +61,17 @@ class ArenaEvaluator:
 
         return music_ndcg, tag_ndcg, score
 
-    def evaluate(self, gt_fname, rec_fname):
+    def evaluate(self, gt_fname, rec_fname, model_file_path):
         # try:
         music_ndcg, tag_ndcg, score = self._eval(gt_fname, rec_fname)
-        print(f"Music nDCG: {music_ndcg:.6}")
-        print(f"Tag nDCG: {tag_ndcg:.6}")
-        print(f"Score: {score:.6}")
+        with open('arena_data/orig/results.txt','a') as f:
+            f.write(model_file_path)
+            f.write("Music nDCG: {music_ndcg:.6}")
+            f.write("Tag nDCG: {tag_ndcg:.6}")
+            f.write("Score: {score:.6}")
+            print(f"Music nDCG: {music_ndcg:.6}")
+            print(f"Tag nDCG: {tag_ndcg:.6}")
+            print(f"Score: {score:.6}")
         # except Exception as e:
         #     print(e)
 
