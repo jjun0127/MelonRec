@@ -19,9 +19,6 @@ class AutoEncoder(nn.Module):
         out_decoder = self.decoder(out_encoder)
         return out_decoder
 
-<<<<<<< HEAD
-    
-=======
 
 class AutoEncoder_with_WE(nn.Module):
     def __init__(self, D_in, H, D_out, dropout):
@@ -48,4 +45,4 @@ class AutoEncoder_with_WE(nn.Module):
 
         _output = self.decoder(_input)
         return _output
->>>>>>> 모델변형추가
+

@@ -101,13 +101,8 @@ def test_type2(question_dataset, answer_file_path, pred_file_path, id2tag_file_p
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-<<<<<<< HEAD
-    parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=100)
-=======
     parser.add_argument('-model_type', type=int, help="model selection, basic AE: 1, using word embedding: 2", default=1)
     parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=100)
-    parser.add_argument('-epochs', type=int, help="total epochs", default=10)
->>>>>>> 모델변형추가
     parser.add_argument('-batch_size', type=int, help="batch size", default=256)
     parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.001)
     parser.add_argument('-dropout', type=float, help="dropout", default=0.0)
@@ -116,13 +111,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-<<<<<<< HEAD
-    H = args.dimension
-=======
     model_type = args.model_type
     H = args.dimension
-    epochs = args.epochs
->>>>>>> 모델변형추가
     batch_size = args.batch_size
     learning_rate = args.learning_rate
     dropout = args.dropout
@@ -133,13 +123,9 @@ if __name__ == "__main__":
 
     tag2id_file_path = 'arena_data/orig/tag_to_id.npy'
     id2tag_file_path = 'arena_data/orig/id_to_file.npy'
-<<<<<<< HEAD
 
     pred_file_path = 'arena_data/answers/pred.json'
     model_file_path = 'model/autoencoder_bce_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
-
-=======
->>>>>>> 모델변형추가
     if not (os.path.exists(tag2id_file_path) & os.path.exists(id2tag_file_path)):
         print('no tag_id file')
         sys.exit(1)
