@@ -56,7 +56,7 @@ def test_model(question_file_path, answer_file_path, pred_file_path, tag2id_file
                 elements.append(element)
 
     write_json(elements, pred_file_path)
-    evaluator.evaluate(answer_file_path, pred_file_path, model_file_path)
+    evaluator.evaluate_with_save(answer_file_path, pred_file_path, model_file_path)
 
 
 if __name__ == "__main__":
