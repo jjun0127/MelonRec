@@ -66,9 +66,9 @@ class ArenaEvaluator:
         music_ndcg, tag_ndcg, score = self._eval(gt_fname, rec_fname)
         with open('arena_data/orig/results.txt','a') as f:
             f.write(model_file_path)
-            f.write("Music nDCG: {music_ndcg:.6}")
-            f.write("Tag nDCG: {tag_ndcg:.6}")
-            f.write("Score: {score:.6}")
+            f.write("\nMusic nDCG: {music_ndcg:.6}\n")
+            f.write("Tag nDCG: {tag_ndcg:.6}\n")
+            f.write("Score: {score:.6}\n\n")
             print(f"Music nDCG: {music_ndcg:.6}")
             print(f"Tag nDCG: {tag_ndcg:.6}")
             print(f"Score: {score:.6}")
