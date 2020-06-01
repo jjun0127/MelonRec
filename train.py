@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import torch
 import argparse
 import torch.nn as nn
 from torch.autograd import Variable
@@ -57,8 +56,6 @@ def train_type1(train_dataset, question_dataset, id2tag_file_path, answer_file_p
         print('epoch: ', epoch)
         running_loss = 0.0
         for idx, (_id, _data) in enumerate(tqdm(data_loader, desc='training...')):
-
-            _data = Variable(_data)
             if device.type == 'cuda':
                 _data = _data.cuda()
 
@@ -80,7 +77,6 @@ def train_type1(train_dataset, question_dataset, id2tag_file_path, answer_file_p
             elements = []
             for idx, (_id, _data) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
                 with torch.no_grad():
-                    _data = Variable(_data)
                     if device.type == 'cuda':
                         _data = _data.cuda()
 
@@ -140,17 +136,9 @@ def train_type2(train_dataset, question_dataset, id2tag_file_path, answer_file_p
         print('epoch: ', epoch)
         running_loss = 0.0
         for idx, (_id, _data, _we) in enumerate(tqdm(data_loader, desc='training...')):
-            _data = Variable(_data)
-            _we = Variable(_we)
-
-            if device.type == 'cuda':
-                _data = _data.cuda()
-                _we = _we.cuda()
-
             optimizer.zero_grad()
-
-            output = model(_data, _we.float())
-
+            _data, _we = _data.to(device), _we.to(device).float()
+            output = model(_data, _we)
             loss = loss_func(output, _data)
             loss.backward()
             optimizer.step()
@@ -217,7 +205,7 @@ if __name__ == "__main__":
         tags_ids_convert(train_file_path, tag2id_file_path, id2tag_file_path)
 
     if model_type == 1:
-        model_file_path = 'model/autoencoder_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_{}_{}_{}_{}_.pkl'.format(H, batch_size, learning_rate, dropout)
 
         train_dataset = SongTagDataset(train_file_path, tag2id_file_path)
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path)
@@ -226,7 +214,7 @@ if __name__ == "__main__":
     elif model_type == 2:
         wv_file_path = 'model/wv/w2v_bpe_100000.model'
         tokenizer_file_path = 'model/tokenizer/tokenizer_bpe_100000.model'
-        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_.pkl'.format(H, batch_size, learning_rate, dropout)
 
         train_dataset = SongTagDataset_with_WE(train_file_path, tag2id_file_path, wv_file_path, tokenizer_file_path)
         question_dataset = SongTagDataset_with_WE(question_file_path, tag2id_file_path, wv_file_path, tokenizer_file_path)

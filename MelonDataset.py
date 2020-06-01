@@ -7,9 +7,9 @@ import sentencepiece as spm
 from word_util import get_tokens_from_sentence
 
 class SongTagDataset(Dataset):
-    def __init__(self, data_file_path, tag_id_file_path):
+    def __init__(self, data_file_path, tag2id_file_path):
         self.train = load_json(data_file_path)
-        self.tag_to_id = dict(np.load(tag_id_file_path, allow_pickle=True).item())
+        self.tag_to_id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
         self.freq_song_to_id = dict(np.load('arena_data/orig/freq_song_to_id.npy', allow_pickle=True).item())
         self.num_songs = len(self.freq_song_to_id)
         self.num_tags = len(self.tag_to_id)
@@ -45,9 +45,9 @@ class SongTagDataset(Dataset):
 
 
 class SongTagDataset_with_WE(Dataset):
-    def __init__(self, data_file_path, tag_id_file_path, wv_file_path, tokenizer_file_path):
+    def __init__(self, data_file_path, tag2id_file_path, wv_file_path, tokenizer_file_path):
         self.train = load_json(data_file_path)
-        self.tag_to_id = dict(np.load(tag_id_file_path, allow_pickle=True).item())
+        self.tag_to_id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
         self.freq_song_to_id = dict(np.load('arena_data/orig/freq_song_to_id.npy', allow_pickle=True).item())
         self.wv = Word2Vec.load(wv_file_path).wv
         self.sp = spm.SentencePieceProcessor()
@@ -69,8 +69,9 @@ class SongTagDataset_with_WE(Dataset):
         _words = tokenized_title + _tags
         we = []
         for _word in _words:
-            if _word in self.wv:
-                we.append(self.wv[_word])
+            if _word in self.tag_to_id:
+                if _word in self.wv:
+                    we.append(self.wv[_word])
         if not len(we):
             we = np.zeros(200, dtype=float)
         else:
