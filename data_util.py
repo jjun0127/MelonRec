@@ -54,7 +54,7 @@ def binary2ids(_input, output, num_songs, freq_song2id_dict, id2tag_dict, istrai
 
 def save_freq_song_id_dict():
     # freq_song_to_id, id_to_freq_song
-    train = load_json('arena_data/orig/train.json')
+    train = load_json('res/train.json')
 
     song_counter = collections.Counter()
     for play_list in train:
@@ -66,9 +66,9 @@ def save_freq_song_id_dict():
             selected_songs.append(k)
 
     freq_song_to_id = {song: _id for _id, song in enumerate(selected_songs)}
-    np.save('arena_data/orig/freq_song_to_id', freq_song_to_id)
+    np.save('res/freq_song2id', freq_song_to_id)
     id_to_freq_song = {v: k for k, v in freq_song_to_id.items()}
-    np.save('arena_data/orig/id_to_freq_song', id_to_freq_song)
+    np.save('res/id2freq_song', id_to_freq_song)
 
 
 def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
@@ -115,3 +115,7 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
         return False
     print('{} is generated'.format(result_file_path))
     return sentences
+
+
+if __name__ == '__main__':
+    save_freq_song_id_dict()
