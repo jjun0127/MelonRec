@@ -9,7 +9,7 @@ class AutoEncoder(nn.Module):
                         nn.Dropout(dropout),
                         nn.Linear(D_in, H),
                         nn.BatchNorm1d(H),
-                        nn.ReLU())
+                        nn.LeakyReLU())
         self.decoder = nn.Sequential(
                         nn.Linear(H, D_out),
                         nn.Sigmoid())
@@ -23,28 +23,28 @@ class AutoEncoder(nn.Module):
 class AutoEncoder_with_WE(nn.Module):
     def __init__(self, D_in, H, D_out, dropout):
         super(AutoEncoder_with_WE, self).__init__()
-        self.encoder = nn.Sequential(
-                        nn.Dropout(dropout),
-                        nn.Linear(D_in, H))
-
-        self.word_embedding = nn.Linear(200, H)
-
-        self.input_layer = nn.Sequential(
+        self.autoencoder = nn.Sequential(
+                            nn.Dropout(dropout),
+                            nn.Linear(D_in, H),
                             nn.BatchNorm1d(H),
-                            nn.ReLU())
+                            nn.LeakyReLU(),
+                            nn.Linear(H, D_out),
+                            nn.BatchNorm1d(D_out))
 
-        self.decoder = nn.Sequential(
-                        nn.Linear(H, D_out),
-                        nn.Sigmoid())
+        self.word_embedding_decoder = nn.Sequential(
+                                        nn.Linear(200, H),
+                                        nn.BatchNorm1d(H),
+                                        nn.LeakyReLU(),
+                                        nn.Linear(H, D_out),
+                                        nn.BatchNorm1d(D_out))
+
+        self.sig_layer = nn.Sigmoid()
 
     def forward(self, x, w):
-        out_encoder = self.encoder(x)
-        out_word_embedding = self.word_embedding(w)
-
-        _input = self.input_layer(torch.add(out_encoder, out_word_embedding))
-
-        _output = self.decoder(_input)
-        return _output
+        out1 = self.autoencoder(x)
+        out2 = self.word_embedding_decoder(w)
+        out3 = self.sig_layer(torch.add(out1, out2))
+        return out3
 
 
 class AutoEncoder_var(nn.Module):

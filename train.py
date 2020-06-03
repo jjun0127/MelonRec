@@ -28,7 +28,6 @@ def train_type1(train_dataset, question_dataset, id2tag_file_path, answer_file_p
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-    qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
     model = AutoEncoder(D_in, H, D_out, dropout=dropout).to(device)
 
@@ -68,6 +67,8 @@ def train_type1(train_dataset, question_dataset, id2tag_file_path, answer_file_p
         torch.save(model, model_file_path)
 
         if not submit:
+            qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size,
+                                             num_workers=num_workers)
             if epoch % testevery == 0:
                 elements = []
                 for idx, (_id, _data) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
@@ -101,7 +102,6 @@ def train_type2(train_dataset, question_dataset, id2tag_file_path, answer_file_p
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-    qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
     model = AutoEncoder_with_WE(D_in, H, D_out, dropout=dropout).to(device)
 
@@ -141,6 +141,8 @@ def train_type2(train_dataset, question_dataset, id2tag_file_path, answer_file_p
         torch.save(model, model_file_path)
 
         if not submit:
+            qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size,
+                                             num_workers=num_workers)
             if epoch % testevery == 0:
                 elements = []
                 for idx, (_id, _data, _we) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
@@ -176,7 +178,6 @@ def train_type3(train_dataset, question_dataset, id2tag_file_path, answer_file_p
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-    qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
     model = AutoEncoder_var(D_in, H, num_songs, num_tags, dropout=dropout).to(device)
 
@@ -220,6 +221,8 @@ def train_type3(train_dataset, question_dataset, id2tag_file_path, answer_file_p
         torch.save(model, model_file_path)
 
         if not submit:
+            qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size,
+                                             num_workers=num_workers)
             if epoch % testevery == 0:
                 elements = []
                 for idx, (_id, _data) in enumerate(tqdm(qestion_data_loader, desc='testing...')):

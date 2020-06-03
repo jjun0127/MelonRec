@@ -174,7 +174,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if model_type == 1:
-        model_file_path = 'model/autoencoder_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_{}_{}_{}_{}_submit.pkl'.format(H, batch_size, learning_rate, dropout)
 
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, freq_song2id_file_path)
 
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     elif model_type == 2:
         wv_file_path = 'model/wv/w2v_bpe_100000.model'
         tokenizer_file_path = 'model/tokenizer/tokenizer_bpe_100000.model'
-        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_submit.pkl'.format(H, batch_size, learning_rate, dropout)
 
         question_dataset = SongTagDataset_with_WE(question_file_path, tag2id_file_path, freq_song2id_file_path,
                                                   wv_file_path, tokenizer_file_path)
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         test_type2(question_dataset, answer_file_path, pred_file_path, id2tag_file_path, model_file_path)
 
     elif model_type == 3:
-        model_file_path = 'model/autoencoder_var{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_var{}_{}_{}_{}_submit.pkl'.format(H, batch_size, learning_rate, dropout)
 
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, freq_song2id_file_path)
 
