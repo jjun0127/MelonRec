@@ -298,7 +298,7 @@ if __name__ == "__main__":
 
         train_type2(train_dataset, question_dataset, id2tag_file_path, answer_file_path, model_file_path)
     elif model_type == 3:
-        model_file_path = 'model/autoencoder_var{}_{}_{}_{}_.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_var{}_{}_{}_{}.pkl'.format(H, batch_size, learning_rate, dropout)
 
         train_dataset = SongTagDataset(train_file_path, tag2id_file_path, freq_song2id_file_path)
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, freq_song2id_file_path)

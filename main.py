@@ -116,15 +116,13 @@ def test_type3(question_dataset, answer_file_path, pred_file_path, id2tag_file_p
         os.remove(pred_file_path)
 
     elements = []
-    for idx, (_id, _data, _we) in enumerate(tqdm(question_data_loader, desc='testing...')):
+    for idx, (_id, _data) in enumerate(tqdm(question_data_loader, desc='testing...')):
         with torch.no_grad():
             _data = _data.to(device)
-            _we = _we.to(device)
-
-            output = model(_data, _we.float())
+            output1, output2 = model(_data)
 
             _id = list(map(int, _id))
-            songs_ids, tags = binary2ids(_data, output, num_songs, id2freq_song_dict, id2tag_dict)
+            songs_ids, tags = binary2ids(_data, torch.cat((output1, output2), 1), num_songs, id2freq_song_dict, id2tag_dict)
             for i in range(len(_id)):
                 element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
                 elements.append(element)
@@ -153,7 +151,7 @@ if __name__ == "__main__":
     learning_rate = args.learning_rate
     dropout = args.dropout
     num_workers = args.num_workers
-    submit = args.sumit
+    submit = args.submit
 
     if submit:
         default_file_path = 'res'
@@ -169,7 +167,7 @@ if __name__ == "__main__":
     id2tag_file_path = f'{default_file_path}/id2tag.npy'
     freq_song2id_file_path = f'{default_file_path}/freq_song2id.npy'
 
-    pred_file_path = f'{default_file_path}/pred.json'
+    pred_file_path = f'{default_file_path}/results.json'
 
     if not (os.path.exists(tag2id_file_path) & os.path.exists(id2tag_file_path)):
         print('no tag_id file')
