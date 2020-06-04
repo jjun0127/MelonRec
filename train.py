@@ -267,12 +267,13 @@ if __name__ == "__main__":
 
     if submit:
         default_file_path = 'res'
+        question_file_path = 'res/val.json'
     else:
         default_file_path = 'arena_data/orig'
+        question_file_path = 'arena_data/questions/sample_val.json'
 
     train_file_path = f'{default_file_path}/train.json'
 
-    question_file_path = f'{default_file_path}/val.json'
     answer_file_path = 'arena_data/answers/sample_val.json'
 
     tag2id_file_path = f'{default_file_path}/tag2id.npy'

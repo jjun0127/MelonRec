@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-
 class AutoEncoder(nn.Module):
     def __init__(self, D_in, H, D_out, dropout):
         super(AutoEncoder, self).__init__()
@@ -51,7 +50,6 @@ class AutoEncoder_var(nn.Module):
     def __init__(self, D_in, H, n_songs, n_tags, dropout):
         super(AutoEncoder_var, self).__init__()
         self.autoencoder1 = nn.Sequential(
-                        nn.Dropout(dropout),
                         nn.Linear(D_in, H),
                         nn.BatchNorm1d(H),
                         nn.LeakyReLU(),
@@ -59,14 +57,15 @@ class AutoEncoder_var(nn.Module):
                         nn.Sigmoid())
 
         self.autoencoder2 = nn.Sequential(
-                        nn.Dropout(dropout),
                         nn.Linear(D_in, H),
                         nn.BatchNorm1d(H),
                         nn.LeakyReLU(),
                         nn.Linear(H, n_tags),
                         nn.Sigmoid())
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
+        x = self.dropout(x)
         out_autoencoder1 = self.autoencoder1(x)
         out_autoencoder2 = self.autoencoder2(x)
         return out_autoencoder1, out_autoencoder2
