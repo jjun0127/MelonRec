@@ -85,25 +85,27 @@ if __name__ == '__main__':
     train_file_path = 'arena_data/orig/train.json'
     genre_file_path = 'res/genre_gn_pre.json'
 
-    vocab_size = 100000
+    vocab_sizes = [8000, 12000, 16000, 20000, 24000, 28000]
     method = 'bpe'
-    tokenize_input_file_path = f'model/tokenizer/tokenizer_input_{method}_{vocab_size}.txt'
-    tokenizer_file_path_prefix = f'model/tokenizer/tokenizer_{method}_{vocab_size}'
 
-    sentences = make_input4tokenizer(train_file_path, genre_file_path, tokenize_input_file_path)
+    for vocab_size in vocab_sizes:
+        tokenize_input_file_path = f'model/tokenizer/tokenizer_input_{method}_{vocab_size}.txt'
+        tokenizer_file_path_prefix = f'model/tokenizer/tokenizer_{method}_{vocab_size}'
 
-    if not sentences:
-        sys.exit(1)
+        sentences = make_input4tokenizer(train_file_path, genre_file_path, tokenize_input_file_path)
 
-    if not os.path.exists(tokenizer_file_path_prefix + '.model'):
-        train_tokenizer(tokenize_input_file_path, tokenizer_file_path_prefix, vocab_size, method)
+        if not sentences:
+            sys.exit(1)
 
-    sp = spm.SentencePieceProcessor()
-    sp.Load(tokenizer_file_path_prefix + '.model')
+        if not os.path.exists(tokenizer_file_path_prefix + '.model'):
+            train_tokenizer(tokenize_input_file_path, tokenizer_file_path_prefix, vocab_size, method)
 
-    tokenized_sentences = get_tokens_from_sentences(sp, sentences)
+        sp = spm.SentencePieceProcessor()
+        sp.Load(tokenizer_file_path_prefix + '.model')
 
-    model_fn = 'model/wv/w2v_{}_{}.model'.format(method, vocab_size)
+        tokenized_sentences = get_tokens_from_sentences(sp, sentences)
 
-    model = string2vec(tokenized_sentences, size=200, window=5, min_count=1, workers=8, sg=1, hs=1)
-    model.save_model(model_fn)
+        model_fn = 'model/wv/w2v_{}_{}.model'.format(method, vocab_size)
+
+        model = string2vec(tokenized_sentences, size=200, window=5, min_count=1, workers=8, sg=1, hs=1)
+        model.save_model(model_fn)

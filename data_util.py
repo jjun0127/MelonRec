@@ -30,7 +30,7 @@ def tags_ids_convert(train_file_path, tag2id_filepath, id2tag_filepath):
     return True
 
 
-def binary2ids(_input, output, num_songs, freq_song2id_dict, id2tag_dict, istrain=False):
+def binary_songs2ids(_input, output, prep_song2id_dict, istrain=False):
     if torch.cuda.is_available():
         _input = _input.cpu().detach().numpy()
         output = output.cpu().detach().numpy()
@@ -38,37 +38,83 @@ def binary2ids(_input, output, num_songs, freq_song2id_dict, id2tag_dict, istrai
         _input = _input.detach().numpy()
         output = output.detach().numpy()
         
-    to_song_id = lambda x: [freq_song2id_dict[_x] for _x in x]
+    to_song_id = lambda x: [prep_song2id_dict[_x] for _x in x]
+
+    if not istrain:
+        output -= _input
+
+    songs_idxes = output.argsort(axis=1)[:, ::-1][:, :100]
+
+    return list(map(to_song_id, songs_idxes))
+
+
+def binary_tags2ids(_input, output, id2tag_dict, istrain=False):
+    if torch.cuda.is_available():
+        _input = _input.cpu().detach().numpy()
+        output = output.cpu().detach().numpy()
+    else:
+        _input = _input.detach().numpy()
+        output = output.detach().numpy()
+
     to_dict_id = lambda x: [id2tag_dict[_x] for _x in x]
 
     if not istrain:
         output -= _input
 
-    songs_output, tags_output = np.split(output, [num_songs], axis=1)
+    tags_idxes = output.argsort(axis=1)[:, ::-1][:, :10]
 
-    songs_idxes = songs_output.argsort(axis=1)[:, ::-1][:, :100]
-    tags_idxes = tags_output.argsort(axis=1)[:, ::-1][:, :10]
-
-    return list(map(to_song_id, songs_idxes)), list(map(to_dict_id, tags_idxes))
+    return list(map(to_dict_id, tags_idxes))
 
 
-def save_freq_song_id_dict():
-    # freq_song_to_id, id_to_freq_song
-    train = load_json('res/train.json')
+def save_freq_song_id_dict(thr=1, submit=False):
+    if submit:
+        file_path = 'res'
+    else:
+        file_path = 'arena_data/orig'
+
+    train = load_json(f'{file_path}/train.json')
 
     song_counter = collections.Counter()
     for play_list in train:
         song_counter.update(play_list['songs'])
 
     selected_songs = []
-    for k, v in song_counter.items():
-        if v > 1:
+    song_counter = list(song_counter.items())
+    for k, v in song_counter:
+        if v > thr:
             selected_songs.append(k)
 
-    freq_song_to_id = {song: _id for _id, song in enumerate(selected_songs)}
-    np.save('res/freq_song2id', freq_song_to_id)
-    id_to_freq_song = {v: k for k, v in freq_song_to_id.items()}
-    np.save('res/id2freq_song', id_to_freq_song)
+    print(f'{len(song_counter)} songs to {len(selected_songs)} songs')
+
+    freq_song2id = {song: _id for _id, song in enumerate(selected_songs)}
+    np.save(f'{file_path}/freq_song2id_thr{thr}', freq_song2id)
+    id2freq_song = {v: k for k, v in freq_song2id.items()}
+    np.save(f'{file_path}/id2freq_song_thr{thr}', id2freq_song)
+
+
+def save_liked_song_id_dict(thr=0.5, submit=False):
+    if submit:
+        file_path = 'res'
+    else:
+        file_path = 'arena_data/orig'
+
+    train = load_json(f'{file_path}/train.json')
+
+    song_counter = collections.Counter()
+    for play_list in train:
+        like_cnt = play_list["like_cnt"]
+        songs = play_list['songs']
+        songs_dict = {song: like_cnt for song in songs}
+        song_counter.update(songs_dict)
+
+    sorted_songs = sorted(song_counter.items(), key=lambda x: x[1], reverse=True)
+    selected_songs = list(dict(sorted_songs[:int(len(sorted_songs)*thr)]).keys())
+    print(f'{len(sorted_songs)} songs to {len(selected_songs)} songs')
+
+    liked_song2id = {song: _id for _id, song in enumerate(selected_songs)}
+    np.save(f'{file_path}/liked_song2id_thr{thr}', liked_song2id)
+    id2liked_song = {v: k for k, v in liked_song2id.items()}
+    np.save(f'{file_path}/id2liked_song_thr{thr}', id2liked_song)
 
 
 def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
@@ -118,4 +164,5 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
 
 
 if __name__ == '__main__':
-    save_freq_song_id_dict()
+    save_freq_song_id_dict(thr=3)
+    # save_liked_song_id_dict(thr=0.4)
