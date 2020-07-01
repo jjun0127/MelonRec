@@ -85,7 +85,7 @@ def train_type0(train_dataset, id2prep_song_file_path, question_dataset, answer_
 
 
 def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
-                question_dataset, answer_file_path, model_file_path):
+                question_dataset, answer_file_path, model_file_path, song_only=True):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
@@ -97,7 +97,10 @@ def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
 
     # hyper parameters
     D_in = num_songs + num_tags
-    D_out = num_songs + num_tags
+    if song_only:
+        D_out = num_songs
+    else:
+        D_out = num_songs + num_tags
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
@@ -108,7 +111,7 @@ def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
 
     parameters = model.parameters()
     loss_func = nn.BCELoss()
-    optimizer = torch.optim.Adam(parameters, lr=learning_rate, weight_decay=0.97)
+    optimizer = torch.optim.Adam(parameters, lr=learning_rate)
 
     try:
         model = torch.load(model_file_path)
@@ -127,9 +130,14 @@ def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
         running_loss = 0.0
         for idx, (_id, _data) in enumerate(tqdm(data_loader, desc='training...')):
             _data = _data.to(device)
+
             optimizer.zero_grad()
             output = model(_data)
-            loss = loss_func(output, _data)
+            if song_only:
+                _songs, _ = torch.split(_data, num_songs, dim=1)
+                loss = loss_func(output, _songs)
+            else:
+                loss = loss_func(output, _data)
             loss.backward()
             optimizer.step()
 
@@ -148,13 +156,22 @@ def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
                     with torch.no_grad():
                         _data = _data.to(device)
                         output = model(_data)
-                        _id = list(map(int, _id))
+
                         songs_input, tags_input = torch.split(_data, num_songs, dim=1)
-                        songs_output, tags_output = torch.split(output, num_songs, dim=1)
-                        songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
-                        tags = binary_tags2ids(tags_input, tags_output, id2tag_dict)
+                        if not song_only:
+                            songs_output, tags_output = torch.split(output, num_songs, dim=1)
+                            songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
+                        else:
+                            songs_ids = binary_songs2ids(songs_input, output, id2prep_song_dict)
+
+                        if not song_only:
+                            tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
+                        else:
+                            tag_ids = [['_', '!', '@', '#', '$', '%', '&', '*', '(', ')']]*batch_size
+
+                        _id = list(map(int, _id))
                         for i in range(len(_id)):
-                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
+                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tag_ids[i]}
                             elements.append(element)
 
                 write_json(elements, temp_fn)
@@ -167,7 +184,7 @@ def train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
-    id2freq_song_dict = dict(np.load(id2prep_song_file_path, allow_pickle=True).item())
+    id2prep_song_dict = dict(np.load(id2prep_song_file_path, allow_pickle=True).item())
 
     # parameters
     num_songs = train_dataset.num_songs
@@ -229,10 +246,15 @@ def train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
 
                         output = model(_data, _we.float())
 
+                        songs_input, tags_input = torch.split(_data, num_songs, dim=1)
+                        songs_output, tags_output = torch.split(output, num_songs, dim=1)
+
+                        songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
+                        tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
+
                         _id = list(map(int, _id))
-                        songs_ids, tags = binary2ids(_data, output, num_songs, id2freq_song_dict, id2tag_dict)
                         for i in range(len(_id)):
-                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
+                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tag_ids[i]}
                             elements.append(element)
 
                 write_json(elements, temp_fn)
@@ -245,7 +267,7 @@ def train_type3(train_dataset, id2prep_song_file_path, id2tag_file_path,
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
-    id2freq_song_dict = dict(np.load(id2prep_song_file_path, allow_pickle=True).item())
+    id2prep_song_dict = dict(np.load(id2prep_song_file_path, allow_pickle=True).item())
 
     # parameters
     num_songs = train_dataset.num_songs
@@ -283,16 +305,16 @@ def train_type3(train_dataset, id2prep_song_file_path, id2tag_file_path,
         running_loss = 0.0
         for idx, (_id, _data) in enumerate(tqdm(data_loader, desc='training...')):
             optimizer.zero_grad()
-            songs_label, tags_label = np.split(_data, [num_songs], axis=1)
             _data = _data.to(device)
             output1, output2 = model(_data)
-            loss1 = loss_func1(output1, songs_label.to(device))
-            loss2 = loss_func2(output2, tags_label.to(device))
-            loss = loss1 + loss2
-            loss.backward()
+            songs_label, tags_label = torch.split(_data, num_songs, dim=1)
+            loss1 = loss_func1(output1, songs_label)
+            loss2 = loss_func2(output2, tags_label)
+            loss1.backward()
+            loss2.backward()
             optimizer.step()
 
-            running_loss += loss.item()
+            running_loss += loss1.item() + loss2.item()
 
         print('loss: %d %d%% %.4f' % (epoch, epoch / epochs * 100, running_loss))
 
@@ -307,12 +329,15 @@ def train_type3(train_dataset, id2prep_song_file_path, id2tag_file_path,
                     with torch.no_grad():
                         _data = _data.to(device)
 
-                        output1, output2 = model(_data)
+                        songs_input, tags_input = torch.split(_data, num_songs, dim=1)
+                        songs_output, tags_output = model(_data)
+
+                        songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
+                        tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
 
                         _id = list(map(int, _id))
-                        songs_ids, tags = binary2ids(_data, torch.cat((output1, output2), 1), num_songs, id2freq_song_dict, id2tag_dict)
                         for i in range(len(_id)):
-                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags[i]}
+                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tag_ids[i]}
                             elements.append(element)
 
                 write_json(elements, temp_fn)
@@ -352,9 +377,11 @@ if __name__ == "__main__":
     if submit:
         default_file_path = 'res'
         question_file_path = 'res/val.json'
+        model_postfix = 'sub'
     else:
         default_file_path = 'arena_data/orig'
         question_file_path = 'arena_data/questions/sample_val.json'
+        model_postfix = ' '
 
     train_file_path = f'{default_file_path}/train.json'
 
@@ -371,15 +398,16 @@ if __name__ == "__main__":
         tags_ids_convert(train_file_path, tag2id_file_path, id2tag_file_path)
 
     if model_type == 0:
-        model_file_path = 'model/autoencoder0_{}_{}_{}_{}_{}_{}.pkl'.\
-            format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr)
+        model_file_path = 'model/autoencoder0_{}_{}_{}_{}_{}_{}_{}.pkl'.\
+            format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
         train_dataset = SongDataset(train_file_path, prep_song2id_file_path)
         question_dataset = SongDataset(question_file_path, prep_song2id_file_path)
 
         train_type0(train_dataset, id2prep_song_file_path, question_dataset, answer_file_path, model_file_path)
     if model_type == 1:
-        model_file_path = 'model/autoencoder_{}_{}_{}_{}_.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_{}_{}_{}_{}_{}_{}_{}.pkl'. \
+            format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
         train_dataset = SongTagDataset(train_file_path, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)
@@ -389,7 +417,8 @@ if __name__ == "__main__":
     elif model_type == 2:
         wv_file_path = 'model/wv/w2v_bpe_100000.model'
         tokenizer_file_path = 'model/tokenizer/tokenizer_bpe_100000.model'
-        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_{}_{}_{}.pkl'. \
+            format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
         train_dataset = SongTagDataset_with_WE(train_file_path, tag2id_file_path, prep_song2id_file_path,
                                                wv_file_path, tokenizer_file_path)
@@ -399,7 +428,8 @@ if __name__ == "__main__":
         train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
                     question_dataset, answer_file_path, model_file_path)
     elif model_type == 3:
-        model_file_path = 'model/autoencoder_var{}_{}_{}_{}_sub.pkl'.format(H, batch_size, learning_rate, dropout)
+        model_file_path = 'model/autoencoder_var_{}_{}_{}_{}_{}_{}_{}.pkl'. \
+            format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
         train_dataset = SongTagDataset(train_file_path, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)

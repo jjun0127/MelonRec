@@ -164,5 +164,6 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
 
 
 if __name__ == '__main__':
-    save_freq_song_id_dict(thr=3)
-    # save_liked_song_id_dict(thr=0.4)
+    save_freq_song_id_dict(thr=2, submit=True)
+    # save_freq_song_id_dict(thr=3)
+    # save_liked_song_id_dict(thr=0.3)

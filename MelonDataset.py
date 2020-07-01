@@ -36,11 +36,11 @@ class SongDataset(Dataset):
 
 
 class SongTagDataset(Dataset):
-    def __init__(self, data_file_path, tag2id_file_path, freq_song2id_file_path):
+    def __init__(self, data_file_path, tag2id_file_path, prep_song2id_file_path):
         self.train = load_json(data_file_path)
         self.tag2id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
-        self.freq_song2id = dict(np.load(freq_song2id_file_path, allow_pickle=True).item())
-        self.num_songs = len(self.freq_song2id)
+        self.prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
+        self.num_songs = len(self.prep_song2id)
         self.num_tags = len(self.tag2id)
 
     def __len__(self):
@@ -58,7 +58,8 @@ class SongTagDataset(Dataset):
         return _id, _input
     
     def _song_ids2vec(self, songs):
-        songs = [self.freq_song2id[song] for song in songs if song in self.freq_song2id.keys()]
+        songs = [self.prep_song2id[song] for song in songs if song in self.prep_song2id.keys()]
+
         songs = np.asarray(songs, dtype=np.int)
         bin_vec = np.zeros(self.num_songs)
         if len(songs) > 0:
@@ -74,14 +75,14 @@ class SongTagDataset(Dataset):
 
 
 class SongTagDataset_with_WE(Dataset):
-    def __init__(self, data_file_path, tag2id_file_path, freq_song2id_file_path, wv_file_path, tokenizer_file_path):
+    def __init__(self, data_file_path, tag2id_file_path, prep_song2id_file_path, wv_file_path, tokenizer_file_path):
         self.train = load_json(data_file_path)
         self.tag2id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
-        self.freq_song2id = dict(np.load(freq_song2id_file_path, allow_pickle=True).item())
+        self.prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
         self.wv = Word2Vec.load(wv_file_path).wv
         self.sp = spm.SentencePieceProcessor()
         self.sp.Load(tokenizer_file_path)
-        self.num_songs = len(self.freq_song2id)
+        self.num_songs = len(self.prep_song2id)
         self.num_tags = len(self.tag2id)
 
     def __len__(self):
@@ -112,7 +113,7 @@ class SongTagDataset_with_WE(Dataset):
         return _id, _input, we
 
     def song_ids2vec(self, songs):
-        songs = [self.freq_song2id[song] for song in songs if song in self.freq_song2id.keys()]
+        songs = [self.prep_song2id[song] for song in songs if song in self.prep_song2id.keys()]
         songs = np.asarray(songs, dtype=np.int)
         bin_vec = np.zeros(self.num_songs)
         if len(songs) > 0:
