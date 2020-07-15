@@ -15,7 +15,7 @@ class AutoEncoder(nn.Module):
                         nn.Dropout(dropout),
                         encoder_layer,
                         nn.BatchNorm1d(H),
-                        nn.ReLU())
+                        nn.LeakyReLU())
         self.decoder = nn.Sequential(
                         decoder_layer,
                         nn.Sigmoid())
@@ -26,24 +26,27 @@ class AutoEncoder(nn.Module):
         return out_decoder
 
 
-class AutoEncoder_with_WE(AutoEncoder):
-    def __init__(self, D_in, H, D_out, dropout):
-        super(AutoEncoder_with_WE, self).__init__(D_in, H, D_out, dropout)
-        self.word_embedding_decoder = nn.Sequential(
-                                        nn.Linear(200, H),
-                                        nn.BatchNorm1d(H),
-                                        nn.LeakyReLU(),
-                                        nn.Linear(H, D_out),
-                                        nn.BatchNorm1d(D_out))
+class AutoEncoder_var_song_only(nn.Module):
+    def __init__(self, D_in, H, n_songs, dropout):
+        super(AutoEncoder_var_song_only, self).__init__()
 
-        self.sig_layer = nn.Sigmoid()
+        encoder = nn.Linear(D_in, H, bias=True)
+        decoder = nn.Linear(H, n_songs, bias=True)
 
-    def forward(self, x, w):
-        out1 = self.encoder(x)
-        out1 = self.decoder(out1)
-        out2 = self.word_embedding_decoder(w)
-        out3 = self.sig_layer(torch.add(out1, out2))
-        return out3
+        torch.nn.init.xavier_uniform_(encoder.weight)
+        torch.nn.init.xavier_uniform_(decoder.weight)
+
+        self.autoencoder = nn.Sequential(
+                        nn.Dropout(dropout),
+                        encoder,
+                        nn.BatchNorm1d(H),
+                        nn.LeakyReLU(),
+                        decoder,
+                        nn.Sigmoid())
+
+    def forward(self, x):
+        out = self.autoencoder(x)
+        return out
 
 
 class AutoEncoder_var(nn.Module):
@@ -82,19 +85,4 @@ class AutoEncoder_var(nn.Module):
         out1 = self.autoencoder1(x)
         out2 = self.autoencoder2(x)
         return out1, out2
-
-
-class Word2plylst_tag(nn.Module):
-    def __init__(self, D_in, H, D_out):
-        super(Word2plylst_tag, self).__init__()
-        self.layer = nn.Sequential(
-                        nn.Linear(D_in, H),
-                        nn.BatchNorm1d(H),
-                        nn.LeakyReLU(),
-                        nn.Linear(H, D_out),
-                        nn.Sigmoid())
-
-    def forward(self, x):
-        out = self.layer(x)
-        return out
 

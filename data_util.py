@@ -92,7 +92,7 @@ def save_freq_song_id_dict(thr=1, submit=False):
     np.save(f'{file_path}/id2freq_song_thr{thr}', id2freq_song)
 
 
-def save_liked_song_id_dict(thr=0.5, submit=False):
+def save_freq_tag_id_dict(thr=1, submit=False):
     if submit:
         file_path = 'res'
     else:
@@ -102,19 +102,20 @@ def save_liked_song_id_dict(thr=0.5, submit=False):
 
     song_counter = collections.Counter()
     for play_list in train:
-        like_cnt = play_list["like_cnt"]
-        songs = play_list['songs']
-        songs_dict = {song: like_cnt for song in songs}
-        song_counter.update(songs_dict)
+        song_counter.update(play_list['songs'])
 
-    sorted_songs = sorted(song_counter.items(), key=lambda x: x[1], reverse=True)
-    selected_songs = list(dict(sorted_songs[:int(len(sorted_songs)*thr)]).keys())
-    print(f'{len(sorted_songs)} songs to {len(selected_songs)} songs')
+    selected_songs = []
+    song_counter = list(song_counter.items())
+    for k, v in song_counter:
+        if v > thr:
+            selected_songs.append(k)
 
-    liked_song2id = {song: _id for _id, song in enumerate(selected_songs)}
-    np.save(f'{file_path}/liked_song2id_thr{thr}', liked_song2id)
-    id2liked_song = {v: k for k, v in liked_song2id.items()}
-    np.save(f'{file_path}/id2liked_song_thr{thr}', id2liked_song)
+    print(f'{len(song_counter)} songs to {len(selected_songs)} songs')
+
+    freq_song2id = {song: _id for _id, song in enumerate(selected_songs)}
+    np.save(f'{file_path}/freq_song2id_thr{thr}', freq_song2id)
+    id2freq_song = {v: k for k, v in freq_song2id.items()}
+    np.save(f'{file_path}/id2freq_song_thr{thr}', id2freq_song)
 
 
 def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
@@ -164,6 +165,4 @@ def make_input4tokenizer(playlist_file_path, genre_file_path, result_file_path):
 
 
 if __name__ == '__main__':
-    save_freq_song_id_dict(thr=2, submit=True)
-    # save_freq_song_id_dict(thr=3)
-    # save_liked_song_id_dict(thr=0.3)
+    save_freq_song_id_dict(thr=2, submit=False)

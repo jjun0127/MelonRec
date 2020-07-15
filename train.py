@@ -6,7 +6,7 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from MelonDataset import SongTagDataset, SongTagDataset_with_WE, SongDataset
-from Models import AutoEncoder, AutoEncoder_with_WE, AutoEncoder_var
+from Models import *
 from data_util import *
 from arena_util import write_json
 from evaluate import ArenaEvaluator
@@ -85,7 +85,7 @@ def train_type0(train_dataset, id2prep_song_file_path, question_dataset, answer_
 
 
 def train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
-                question_dataset, answer_file_path, model_file_path, song_only=True):
+                question_dataset, answer_file_path, model_file_path, song_only=False):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
@@ -192,12 +192,11 @@ def train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
 
     # hyper parameters
     D_in = num_songs + num_tags
-    D_out = num_songs + num_tags
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
 
-    model = AutoEncoder_with_WE(D_in, H, D_out, dropout=dropout).to(device)
+    model = AutoEncoder_var_song_only(D_in, H, num_songs, dropout=dropout).to(device)
 
     testevery = 5
 
@@ -220,11 +219,12 @@ def train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
         print()
         print('epoch: ', epoch)
         running_loss = 0.0
-        for idx, (_id, _data, _we) in enumerate(tqdm(data_loader, desc='training...')):
+        for idx, (_id, _data) in enumerate(tqdm(data_loader, desc='training...')):
             optimizer.zero_grad()
-            _data, _we = _data.to(device), _we.to(device).float()
-            output = model(_data, _we)
-            loss = loss_func(output, _data)
+            _data = _data.to(device)
+            out = model(_data)
+            songs_label, _ = torch.split(_data, num_songs, dim=1)
+            loss = loss_func(out, songs_label)
             loss.backward()
             optimizer.step()
 
@@ -237,24 +237,21 @@ def train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
         if not submit:
             qestion_data_loader = DataLoader(question_dataset, shuffle=True, batch_size=batch_size,
                                              num_workers=num_workers)
+            tags_dummy = ['_', '!', '@', '#', '$', '%', '&', '*', '(', ')']
             if epoch % testevery == 0:
                 elements = []
-                for idx, (_id, _data, _we) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
+                for idx, (_id, _data) in enumerate(tqdm(qestion_data_loader, desc='testing...')):
                     with torch.no_grad():
                         _data = _data.to(device)
-                        _we = _we.to(device)
-
-                        output = model(_data, _we.float())
 
                         songs_input, tags_input = torch.split(_data, num_songs, dim=1)
-                        songs_output, tags_output = torch.split(output, num_songs, dim=1)
+                        out = model(_data)
 
-                        songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
-                        tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
+                        songs_ids = binary_songs2ids(songs_input, out, id2prep_song_dict)
 
                         _id = list(map(int, _id))
                         for i in range(len(_id)):
-                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tag_ids[i]}
+                            element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags_dummy}
                             elements.append(element)
 
                 write_json(elements, temp_fn)
@@ -354,8 +351,8 @@ if __name__ == "__main__":
     parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.001)
     parser.add_argument('-dropout', type=float, help="dropout", default=0.0)
     parser.add_argument('-num_workers', type=int, help="num workers", default=4)
-    parser.add_argument('-prep_method', type=int, help="data preprocessing method, 'frequency':0 'like_cnt':1")
-    parser.add_argument('-prep_method_thr', type=float, help="'frequency':0 < number 'like_cnt': 0~1 float", default=1)
+    parser.add_argument('-prep_method', type=int, help="data preprocessing method, 'frequency':0 'like_cnt':1", default=0)
+    parser.add_argument('-prep_method_thr', type=float, help="'frequency':0 < number 'like_cnt': 0~1 float", default=2)
     parser.add_argument('-submit', type=int, help="arena_data/orig: 0 res: 1", default=0)
 
     args = parser.parse_args()
@@ -415,15 +412,11 @@ if __name__ == "__main__":
         train_type1(train_dataset, id2prep_song_file_path, id2tag_file_path,
                     question_dataset, answer_file_path, model_file_path)
     elif model_type == 2:
-        wv_file_path = 'model/wv/w2v_bpe_100000.model'
-        tokenizer_file_path = 'model/tokenizer/tokenizer_bpe_100000.model'
-        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_{}_{}_{}.pkl'. \
+        model_file_path = 'model/autoencoder_var_song_only_{}_{}_{}_{}_{}_{}_{}.pkl'. \
             format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
-        train_dataset = SongTagDataset_with_WE(train_file_path, tag2id_file_path, prep_song2id_file_path,
-                                               wv_file_path, tokenizer_file_path)
-        question_dataset = SongTagDataset_with_WE(question_file_path, tag2id_file_path, prep_song2id_file_path,
-                                                  wv_file_path, tokenizer_file_path)
+        train_dataset = SongTagDataset(train_file_path, tag2id_file_path, prep_song2id_file_path)
+        question_dataset = SongTagDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)
 
         train_type2(train_dataset, id2prep_song_file_path, id2tag_file_path,
                     question_dataset, answer_file_path, model_file_path)

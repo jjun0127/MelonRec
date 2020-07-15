@@ -85,22 +85,18 @@ def test_type2(question_dataset, answer_file_path, pred_file_path,
         os.remove(pred_file_path)
 
     elements = []
-    for idx, (_id, _data, _we) in enumerate(tqdm(question_data_loader, desc='testing...')):
+    tags_dummy = ['_', '!', '@', '#', '$', '%', '&', '*', '(', ')']
+    for idx, (_id, _data) in enumerate(tqdm(question_data_loader, desc='testing...')):
         with torch.no_grad():
             _data = _data.to(device)
-            _we = _we.to(device)
+            out = model(_data)
+            songs_label, _ = torch.split(_data, num_songs, dim=1)
 
-            output = model(_data, _we.float())
-
-            songs_input, tags_input = torch.split(_data, num_songs, dim=1)
-            songs_output, tags_output = torch.split(output, num_songs, dim=1)
-
-            songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
-            tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
+            songs_ids = binary_songs2ids(songs_label, out, id2prep_song_dict)
 
             _id = list(map(int, _id))
             for i in range(len(_id)):
-                element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tag_ids[i]}
+                element = {'id': _id[i], 'songs': list(songs_ids[i]), 'tags': tags_dummy}
                 elements.append(element)
 
     write_json(elements, pred_file_path)
@@ -215,14 +211,12 @@ if __name__ == "__main__":
                    id2prep_song_file_path, id2tag_file_path, model_file_path)
 
     elif model_type == 2:
-        wv_file_path = 'model/wv/w2v_bpe_100000.model'
-        tokenizer_file_path = 'model/tokenizer/tokenizer_bpe_100000.model'
-        model_file_path = 'model/autoencoder_with_we_{}_{}_{}_{}_{}_{}_{}.pkl'. \
+        model_file_path = 'model/autoencoder_var_song_only_{}_{}_{}_{}_{}_{}_{}.pkl'.\
             format(H, batch_size, learning_rate, dropout, prep_method, prep_method_thr, model_postfix)
 
-        question_dataset = SongTagDataset_with_WE(question_file_path, tag2id_file_path, prep_song2id_file_path,
-                                                  wv_file_path, tokenizer_file_path)
+        question_dataset = SongTagDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)
 
+        ## test
         test_type2(question_dataset, answer_file_path, pred_file_path,
                    id2prep_song_file_path, id2tag_file_path, model_file_path)
 
