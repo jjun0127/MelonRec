@@ -17,6 +17,9 @@ def test(question_dataset, answer_file_path, pred_file_path, id2prep_song_file_p
     id2tag_dict = dict(np.load(id2tag_file_path, allow_pickle=True).item())
     id2prep_song_dict = dict(np.load(id2prep_song_file_path, allow_pickle=True).item())
     num_songs = len(id2prep_song_dict)
+    num_tags = len(id2tag_dict)
+    num_gnr = question_dataset.num_gnr
+    num_dtl_gnr = question_dataset.num_dtl_gnr
 
     question_data_loader = DataLoader(question_dataset, batch_size=batch_size, num_workers=num_workers)
 
@@ -38,8 +41,11 @@ def test(question_dataset, answer_file_path, pred_file_path, id2prep_song_file_p
             _data = _data.to(device)
             output = model(_data)
 
-            songs_input, tags_input = torch.split(_data, num_songs, dim=1)
-            songs_output, tags_output = torch.split(output, num_songs, dim=1)
+            songs_tags_input, _ = torch.split(_data, num_songs + num_tags, dim=1)
+            songs_input, tags_input = torch.split(songs_tags_input, num_songs, dim=1)
+            songs_and_tags_output, _ = torch.split(output, num_songs + num_tags, dim=1)
+            songs_output, tags_output = torch.split(songs_and_tags_output, num_songs, dim=1)
+
             songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
             tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
 

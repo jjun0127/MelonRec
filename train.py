@@ -21,9 +21,11 @@ def train(train_dataset, id2prep_song_file_path, id2tag_file_path, question_data
     # parameters
     num_songs = train_dataset.num_songs
     num_tags = train_dataset.num_tags
+    num_gnr = train_dataset.num_gnr
+    num_dtl_gnr = train_dataset.num_dtl_gnr
 
     # hyper parameters
-    D_in = D_out = num_songs + num_tags
+    D_in = D_out = num_songs + num_tags + num_gnr + num_dtl_gnr
 
     evaluator = ArenaEvaluator()
     data_loader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
@@ -76,8 +78,10 @@ def train(train_dataset, id2prep_song_file_path, id2tag_file_path, question_data
                         _data = _data.to(device)
                         output = model(_data)
 
-                        songs_input, tags_input = torch.split(_data, num_songs, dim=1)
-                        songs_output, tags_output = torch.split(output, num_songs, dim=1)
+                        songs_tags_input, _ = torch.split(_data, num_songs + num_tags, dim=1)
+                        songs_input, tags_input = torch.split(songs_tags_input, num_songs, dim=1)
+                        songs_and_tags_output, _ = torch.split(output, num_songs + num_tags, dim=1)
+                        songs_output, tags_output = torch.split(songs_and_tags_output, num_songs, dim=1)
                         songs_ids = binary_songs2ids(songs_input, songs_output, id2prep_song_dict)
                         tag_ids = binary_tags2ids(tags_input, tags_output, id2tag_dict)
 
