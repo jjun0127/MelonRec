@@ -15,7 +15,6 @@ class SongTagDataset(Dataset):
         self.num_tags = len(self.tag2id)
         self._init_song_meta()
 
-
     def __len__(self):
         return len(self.train)
 
@@ -28,7 +27,7 @@ class SongTagDataset(Dataset):
         tag_vector = self._tag_ids2vec(self.train[idx]['tags'])
         gnr_vector = self._get_gnr_vector(self.train[idx]['songs'], self.gnr_code, self.gnr_dic, self.song_gnr_dic)
         dtl_gnr_vector = self._get_dtl_gnr_vector(self.train[idx]['songs'], self.dtl_gnr_code, self.dtl_dic, self.song_dtl_dic)
-        _input = torch.from_numpy(np.concatenate([song_vector, tag_vector, gnr_vector, dtl_gnr_vector]))
+        _input = torch.from_numpy(np.concatenate([song_vector, tag_vector, gnr_vector, dtl_gnr_vector]).astype(np.float32))
 
         return _id, _input
 
@@ -52,14 +51,14 @@ class SongTagDataset(Dataset):
         bin_vec = np.zeros(self.num_songs)
         if len(songs) > 0:
             bin_vec[songs] = 1
-        return np.array(bin_vec, dtype=np.float32)
+        return np.array(bin_vec)
             
     def _tag_ids2vec(self, tags):
         tags = [self.tag2id[tag] for tag in tags if tag in self.tag2id.keys()]
         tags = np.asarray(tags, dtype=np.int)
         bin_vec = np.zeros(self.num_tags)
         bin_vec[tags] = 1
-        return np.array(bin_vec, dtype=np.float32)
+        return np.array(bin_vec)
 
     def _get_gnr_vector(self, songs, gnr_code, gnr_dic, song_gnr_dic):
         # v_gnr (각 플레이리스트의 수록곡 장르 비율을 담은 30차원 vector)
