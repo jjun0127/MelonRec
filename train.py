@@ -209,20 +209,20 @@ if __name__ == "__main__":
         default_file_path = 'res'
         question_file_path = 'res/val.json'
         model_postfix = '_sub'
+        train_file_path = f'{default_file_path}/train_val.json'
     else:
         default_file_path = 't_arena_data/orig'
         question_file_path = 't_arena_data/questions/t_val.json'
         model_postfix = ''
-
-    train_file_path = f'{default_file_path}/t_train.json'
+        train_file_path = f'{default_file_path}/t_train.json'
 
     answer_file_path = 't_arena_data/answers/t_val.json'
 
-    tag2id_file_path = f'{default_file_path}/t_tag2id.npy'
-    id2tag_file_path = f'{default_file_path}/t_id2tag.npy'
+    tag2id_file_path = f'{default_file_path}/tag2id.npy'
+    id2tag_file_path = f'{default_file_path}/id2tag.npy'
 
-    prep_song2id_file_path = f'{default_file_path}/t_freq_song2id_thr{freq_thr}.npy'
-    id2prep_song_file_path = f'{default_file_path}/t_id2freq_song_thr{freq_thr}.npy'
+    prep_song2id_file_path = f'{default_file_path}/freq_song2id_thr{freq_thr}.npy'
+    id2prep_song_file_path = f'{default_file_path}/id2freq_song_thr{freq_thr}.npy'
 
     if not (os.path.exists(tag2id_file_path) & os.path.exists(id2tag_file_path)):
         tags_ids_convert(train_file_path, tag2id_file_path, id2tag_file_path)
@@ -230,13 +230,13 @@ if __name__ == "__main__":
     if use_genre:
         train_dataset = SongTagGenreDataset(train_file_path, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagGenreDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)
-        model_file_path = 'model/autoencoder_{}_{}_{}_{}_{}{}_gnr_t.pkl'. \
+        model_file_path = 'model/autoencoder_{}_{}_{}_{}_{}_gnr_t{}.pkl'. \
             format(H, batch_size, learning_rate, dropout, freq_thr, model_postfix)
         train_with_genre(train_dataset, id2prep_song_file_path, id2tag_file_path, question_dataset, answer_file_path, model_file_path)
     else:
         train_dataset = SongTagDataset(train_file_path, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagDataset(question_file_path, tag2id_file_path, prep_song2id_file_path)
-        model_file_path = 'model/autoencoder_{}_{}_{}_{}_{}{}_t.pkl'. \
+        model_file_path = 'model/autoencoder_{}_{}_{}_{}_{}_t{}.pkl'. \
             format(H, batch_size, learning_rate, dropout, freq_thr, model_postfix)
         train_without_genre(train_dataset, id2prep_song_file_path, id2tag_file_path, question_dataset, answer_file_path, model_file_path)
 
