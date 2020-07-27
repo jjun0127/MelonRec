@@ -17,14 +17,15 @@
   
 ## 2. 모델 설명
 **<모델 개요>**
-![model](https://user-images.githubusercontent.com/50820635/88532187-1a3ddb80-d03f-11ea-8572-13ff9315d9b2.png)
+![model](https://user-images.githubusercontent.com/50820635/88533557-70ac1980-d041-11ea-9af9-7c2b7428bfbb.png)
 
 **<STEP 1>** 플레이리스트간 Similarity 계산  
-- AutoEncoder
-- Word2Vec  
+- AutoEncoder로 Embedding 하고 Similarity 계산
+- Word2Vec으로 Embedding 하고 Similarity 계산   
 
 **<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산  
-- k Nearest Neighbor  
+- k Nearest Neighbor의 Song과 Tag 활용
+- Similarity가 높을수록 가중치
 
 **<STEP 3>** Song 추천, Tag 추천  
 - 이미 담겨있는 중복 Song, Tag 제외
