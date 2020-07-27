@@ -7,8 +7,8 @@ import torch
 
 
 class SongTagDataset(Dataset):
-    def __init__(self, data_file_path, tag2id_file_path, prep_song2id_file_path):
-        self.train = load_json(data_file_path)
+    def __init__(self, json_dataset, tag2id_file_path, prep_song2id_file_path):
+        self.train = json_dataset
         self.tag2id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
         self.prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
         self.num_songs = len(self.prep_song2id)
@@ -46,73 +46,9 @@ class SongTagDataset(Dataset):
         return np.array(bin_vec)
 
 
-class SongTagTimeDataset(Dataset):
-    def __init__(self, data_file_path, tag2id_file_path, prep_song2id_file_path):
-        self.train = load_json(data_file_path)
-        self.tag2id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
-        self.prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
-        self.num_songs = len(self.prep_song2id)
-        self.num_tags = len(self.tag2id)
-        self._init_update_time()
-
-    def __len__(self):
-        return len(self.train)
-
-    def __getitem__(self, idx):
-        if torch.is_tensor(idx):
-            idx = idx.tolist()
-
-        _id = self.train[idx]['id']
-        song_vector = self._song_ids2vec(self.train[idx]['songs'])
-        tag_vector = self._tag_ids2vec(self.train[idx]['tags'])
-        date_vector = self._date_ids2vec(self.train[idx]['updt_date'])
-        _input = torch.from_numpy(
-            np.concatenate([song_vector, tag_vector, date_vector]).astype(np.float32))
-
-        return _id, _input
-
-    def _song_ids2vec(self, songs):
-        songs = [self.prep_song2id[song] for song in songs if song in self.prep_song2id.keys()]
-
-        songs = np.asarray(songs, dtype=np.int)
-        bin_vec = np.zeros(self.num_songs)
-        if len(songs) > 0:
-            bin_vec[songs] = 1
-        return np.array(bin_vec)
-
-    def _tag_ids2vec(self, tags):
-        tags = [self.tag2id[tag] for tag in tags if tag in self.tag2id.keys()]
-        tags = np.asarray(tags, dtype=np.int)
-        bin_vec = np.zeros(self.num_tags)
-        bin_vec[tags] = 1
-        return np.array(bin_vec)
-
-    def _date_ids2vec(self, date):
-        year, month = date[:7].split('-')
-        v_year = np.zeros(len(self.year2id))
-        v_month = np.zeros(len(self.month2id))
-        v_year[self.year2id[year]] += 1
-        v_month[self.month2id[month]] += 1
-        return np.concatenate([v_year, v_month])
-
-    def _init_update_time(self):
-        years = []
-        months = []
-        for plylst in self.train:
-            year, month = plylst['updt_date'][:7].split('-')
-            years.append(year)
-            months.append(month)
-        years = list(set(years))
-        months = list(set(months))
-        self.year2id = {year: idx for idx, year in enumerate(years)}
-        self.month2id = {year: idx for idx, year in enumerate(months)}
-        self.num_year = len(self.year2id)
-        self.num_month = len(self.month2id)
-
-
 class SongTagGenreDataset(Dataset):
-    def __init__(self, data_file_path, tag2id_file_path, prep_song2id_file_path):
-        self.train = load_json(data_file_path)
+    def __init__(self, json_dataset, tag2id_file_path, prep_song2id_file_path):
+        self.train = json_dataset
         self.tag2id = dict(np.load(tag2id_file_path, allow_pickle=True).item())
         self.prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
         self.num_songs = len(self.prep_song2id)
@@ -125,15 +61,15 @@ class SongTagGenreDataset(Dataset):
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
-            
+
         _id = self.train[idx]['id']
         song_vector = self._song_ids2vec(self.train[idx]['songs'])
         tag_vector = self._tag_ids2vec(self.train[idx]['tags'])
         gnr_vector = self._get_gnr_vector(self.train[idx]['songs'], self.gnr_code, self.gnr_dic, self.song_gnr_dic)
         dtl_gnr_vector = self._get_dtl_gnr_vector(self.train[idx]['songs'], self.dtl_gnr_code, self.dtl_dic, self.song_dtl_dic)
-        _input = torch.from_numpy(np.concatenate([song_vector, tag_vector, gnr_vector, dtl_gnr_vector]).astype(np.float32))
+        _input = torch.from_numpy(np.concatenate([song_vector, tag_vector]).astype(np.float32))
 
-        return _id, _input
+        return _id, _input, gnr_vector, dtl_gnr_vector
 
     def _init_song_meta(self):
         song_meta = load_json('res/song_meta.json')
@@ -156,7 +92,7 @@ class SongTagGenreDataset(Dataset):
         if len(songs) > 0:
             bin_vec[songs] = 1
         return np.array(bin_vec)
-            
+
     def _tag_ids2vec(self, tags):
         tags = [self.tag2id[tag] for tag in tags if tag in self.tag2id.keys()]
         tags = np.asarray(tags, dtype=np.int)
