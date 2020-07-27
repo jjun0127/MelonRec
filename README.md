@@ -20,12 +20,16 @@
 ![model](https://user-images.githubusercontent.com/50820635/88534733-a9e58900-d043-11ea-821b-1166c64e2b42.png)
 
 **<STEP 1>** 플레이리스트간 Similarity 계산  
-- AutoEncoder로 Embedding 하고 Similarity 계산
+- AutoEncoder로 Embedding
   - Input: Song One-hot Vector, Tag One-hot Vector 
   - Ouput: Playlist Embedding Vector
-- Word2Vec으로 Embedding 하고 Similarity 계산
+- Word2Vec으로 Embedding
   - Input: Sentence (Title, Tag, Genre, Date)
   - Ouput: Playlist Embedding Vector
+- Embedding Vector간 Similarity 계산
+  - Cosine Similarity
+  - Euclidean Distance
+  - Pearson Correlation Coefficient
 
 **<STEP 2>** k개의 비슷한 플레이리스트로부터 Song Score, Tag Score 계산  
 - k Nearest Neighbor의 Song과 Tag 활용
