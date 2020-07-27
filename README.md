@@ -1,5 +1,5 @@
-### kakao arena 3rd Competition
-# ["Melon Playlist Continuation"](https://arena.kakao.com/c/7)
+### kakao arena 3rd Competition (카카오 아레나 3차 대회)
+# Melon Playlist Continuation
 - **팀명**: 멜론이 체질 ([공개 리더보드](https://arena.kakao.com/c/7/leaderboard) 5위)
 - **팀원**
   - jun.94
@@ -54,10 +54,16 @@
 - pytorch 1.5.1
 
 ## 4. 폴더 및 파일
-- 코드 다운로드 (link)
+- 코드 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
 - 데이터 다운로드 ([link](https://arena.kakao.com/c/7/data))
-- 모델 다운로드 (link)
-- 중간 파일 다운로드 (link)
+- 모델 다운로드
+  - [local_val용 모델]()
+  - [val용 모델]()
+  - [test용 모델]()
+- 중간 파일 다운로드
+  - [local_val용 중간 파일]()
+  - [val용 중간 파일]()
+  - [test용 중간 파일]()
 ~~~
 .
 ├── model
