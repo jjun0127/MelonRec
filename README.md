@@ -16,15 +16,18 @@
 - **참여 팀 수**: 786팀
   
 ## 2. 모델 설명
-- **<STEP 1>** 플레이리스트간 Similarity 계산
-  - AutoEncoder
-  - Word2Vec
-- **<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산
-  - k Nearest Neighbor
-- **<STEP 3>** Song 추천, Tag 추천
-  - 이미 담겨있는 중복 Song, Tag 제외
-  - 플레이리스트 업데이트 시점 이후의 Song 제외
-  - Song 100개, Tag 10개가 채워지지 않았다면 Popular로 채우기
+**<모델 개요>**
+![model](https://user-images.githubusercontent.com/50820635/88532187-1a3ddb80-d03f-11ea-8572-13ff9315d9b2.png)
+
+**<STEP 1>** 플레이리스트간 Similarity 계산
+- AutoEncoder
+- Word2Vec
+**<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산
+- k Nearest Neighbor
+**<STEP 3>** Song 추천, Tag 추천
+- 이미 담겨있는 중복 Song, Tag 제외
+- 플레이리스트 업데이트 시점 이후의 Song 제외
+- Song 100개, Tag 10개가 채워지지 않았다면 Popular로 채우기
 
 ## 3. 개발 환경 및 라이브러리
 ### 1) 개발 환경
@@ -43,6 +46,7 @@
 - pytorch 1.5.1
 
 ## 4. 폴더 및 파일
+- 코드 다운로드 (link)
 - 데이터 다운로드 ([link](https://arena.kakao.com/c/7/data))
 - 모델 다운로드 (link)
 - 중간 파일 다운로드 (link)
@@ -54,7 +58,6 @@
 │   ├── tokenizer_bpe_24000_all.model.vocab (409KB)
 │   └── w2v_bpe_24000_all.model (63,553KB)
 ├── res
-│   ├── all.json
 │   ├── freq_song2id_thr2.npy
 │   ├── genre_gn_pre.json
 │   ├── id2freq_song_thr2.npy
@@ -63,7 +66,6 @@
 │   ├── tag2id.npy
 │   ├── test.json
 │   ├── train.json
-│   ├── train_val.json
 │   └── val.json
 ├── results
 ├── scores
@@ -76,13 +78,13 @@
 │   ├── val_scores_bias_cos.npy
 │   ├── val_scores_bias_cos_gnr.npy
 │   └── val_scores_title_cos_24000.npy
-└── t_arena_data
+├── arena_data
 │   ├── answers
-│   │   └── t_val.json
+│   │   └── val.json
 │   ├── orig
-│   │   └── t_train.json
+│   │   └── train.json
 │   └── questions
-│       └── t_val.json
+│       └── val.json
 ├── autoencoder_score_generator.ipynb
 ├── MelonRec_v3.8.0.ipynb
 └── w2v_score_generator.ipynb
