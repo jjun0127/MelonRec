@@ -61,12 +61,8 @@
 - 코드 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
 - 데이터 다운로드 ([link](https://arena.kakao.com/c/7/data))
 - 모델 다운로드
-  - [local_val용 모델]()
-  - [val용 모델]()
   - [test용 모델]()
 - 중간 파일 다운로드
-  - [local_val용 중간 파일]()
-  - [val용 중간 파일]()
   - [test용 중간 파일]()
 ~~~
 .
@@ -81,3 +77,14 @@
 ~~~
 
 ## 5. 추천 결과 재현 방법
+- train.py 실행
+ - 개발 환경이 갖추어진 상태에서 train.py를 실행합니다.
+ - 하이퍼 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 모델 튜닝에 사용한 하이퍼 파라미터들 입니다.
+  - dimensions: size of hidden layer dimension
+  - epochs: number of total epochs
+  - batch_size: batch size
+  - learning_rate: learning rate
+  - dropout: dropout
+  - num_workers: num workers
+  - freq_thr: frequency threshold, 주어진 값 이상의 빈도를 갖는 song들만 사용합니다. (tag는 적용 x)
+  - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
