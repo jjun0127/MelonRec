@@ -71,43 +71,13 @@
 ~~~
 .
 ├── model
-│   ├── autoencoder_450_256_0.0005_0.2_2_local_val.pkl
-│   ├── autoencoder_450_256_0.0005_0.2_2_val.pkl
-│   ├── autoencoder_450_256_0.0005_0.2_2_test.pkl
-│   ├── tokenizer_bpe_24000_all.model (652KB)
-│   ├── tokenizer_bpe_24000_all.model.vocab (409KB)
-│   └── w2v_bpe_24000_all.model (63,553KB)
 ├── res
-│   ├── freq_song2id_thr2.npy
-│   ├── genre_gn_pre.json
-│   ├── id2freq_song_thr2.npy
-│   ├── id2tag.npy
-│   ├── song_meta.json
-│   ├── tag2id.npy
-│   ├── test.json
-│   ├── train.json
-│   └── val.json
 ├── results
 ├── scores
-│   ├── local_val_scores_bias_cos.npy
-│   ├── local_val_scores_bias_cos_gnr.npy
-│   ├── local_val_scores_title_cos_24000.npy
-│   ├── test_scores_bias_cos.npy
-│   ├── test_scores_bias_cos_gnr.npy
-│   ├── test_scores_title_cos_24000.npy
-│   ├── val_scores_bias_cos.npy
-│   ├── val_scores_bias_cos_gnr.npy
-│   └── val_scores_title_cos_24000.npy
-├── arena_data
-│   ├── answers
-│   │   └── val.json
-│   ├── orig
-│   │   └── train.json
-│   └── questions
-│       └── val.json
-├── autoencoder_score_generator.ipynb
-├── MelonRec_v3.8.0.ipynb
-└── w2v_score_generator.ipynb
+└── arena_data
+    ├── answers
+    ├── orig
+    └── questions
 ~~~
 
 ## 5. 추천 결과 재현 방법
