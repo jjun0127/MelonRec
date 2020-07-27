@@ -17,15 +17,20 @@
   
 ## 2. 모델 설명
 **<모델 개요>**
-![model](https://user-images.githubusercontent.com/50820635/88533557-70ac1980-d041-11ea-9af9-7c2b7428bfbb.png)
+![model](https://user-images.githubusercontent.com/50820635/88534733-a9e58900-d043-11ea-821b-1166c64e2b42.png)
 
 **<STEP 1>** 플레이리스트간 Similarity 계산  
 - AutoEncoder로 Embedding 하고 Similarity 계산
-- Word2Vec으로 Embedding 하고 Similarity 계산   
+  - Input: Song One-hot Vector, Tag One-hot Vector 
+  - Ouput: Playlist Embedding Vector
+- Word2Vec으로 Embedding 하고 Similarity 계산
+  - Input: Sentence (Title, Tag, Genre, Date)
+  - Ouput: Playlist Embedding Vector
 
-**<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산  
+**<STEP 2>** k개의 비슷한 플레이리스트로부터 Song Score, Tag Score 계산  
 - k Nearest Neighbor의 Song과 Tag 활용
 - Similarity가 높을수록 가중치
+- Frequent Song, Same Artist 등의 정보로 Score 보정
 
 **<STEP 3>** Song 추천, Tag 추천  
 - 이미 담겨있는 중복 Song, Tag 제외
@@ -56,7 +61,9 @@
 ~~~
 .
 ├── model
-│   ├── autoencoder_450_256_0.0005_0.2_2__sub_all.pkl (945,382KB)
+│   ├── autoencoder_450_256_0.0005_0.2_2_local_val.pkl
+│   ├── autoencoder_450_256_0.0005_0.2_2_val.pkl
+│   ├── autoencoder_450_256_0.0005_0.2_2_test.pkl
 │   ├── tokenizer_bpe_24000_all.model (652KB)
 │   ├── tokenizer_bpe_24000_all.model.vocab (409KB)
 │   └── w2v_bpe_24000_all.model (63,553KB)
