@@ -179,9 +179,7 @@ class title_tokenizer():
                 f.write(sentence + '\n')
 
     def train_tokenizer(self, input_fn, prefix, vocab_size, model_type):
-        templates = '--input={}         --pad_id=0         --bos_id=1         --eos_id=2         --unk_id=3         ' \
-                    '--model_prefix={}         --vocab_size={}         --character_coverage=1.0         ' \
-                    '--model_type={} '
+        templates = '--input={}         --pad_id=0         --bos_id=1         --eos_id=2         --unk_id=3         --model_prefix={}         --vocab_size={}         --character_coverage=1.0         --model_type={}'
 
         cmd = templates.format(input_fn,
                                prefix,  # output model 이름
@@ -215,17 +213,18 @@ def train_tokenizer_w2v(_train_file_path, _val_file_path, _test_file_path, _genr
 
     if not sentences:
         sys.exit(1)
-    tokenizer_name = 'model/tokenizer_{}_{}_{}.model'.format(method, vocab_size, _submit_type)
+    tokenizer_name = 'model/tokenizer_{}_{}_{}'.format(method, vocab_size, _submit_type)
+    tokenizer_name_model = 'model/tokenizer_{}_{}_{}.model'.format(method, vocab_size, _submit_type)
     if _retrain:
-        print("start train_tokenizer....")
+        print("start train_tokenizer....q")
         train_tokenizer(_tokenize_input_file_path, tokenizer_name, vocab_size, method)
     else:
-        if not os.path.exists(tokenizer_name):
-            print("start train_tokenizer....")
+        if not os.path.exists(tokenizer_name_model):
+            print("start train_tokenizer...w.")
             train_tokenizer(_tokenize_input_file_path, tokenizer_name, vocab_size, method)
 
     sp = spm.SentencePieceProcessor()
-    sp.Load(tokenizer_name)
+    sp.Load(tokenizer_name_model)
 
     tokenized_sentences = get_tokens_from_sentences(sp, sentences)
 
@@ -393,10 +392,12 @@ def get_w2v_scores(submit_type, _retrain):
     if submit_type == 'local_val':
         val_file_path = None
         test_file_path = None
+        train = load_json(train_file_path)
         question = load_json(question_file_path)
     elif submit_type == 'val':
         test_file_path = None
         val_file_path = question_file_path
+        train = load_json(train_file_path)
         question = load_json(question_file_path)
     elif submit_type == 'test':
         val_file_path = val_file_path
