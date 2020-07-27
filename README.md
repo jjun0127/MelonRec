@@ -93,4 +93,11 @@
     - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
     - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
 - inference.py 실행
-
+  - train 과정을 거쳐 학습된 모델들을 가지고 inference.py를 실행합니다.
+  - 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 옵션별 파라미터들 입니다.
+    - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
+    - retrain: remove tokenizer&w2v model and retrain 1: True, 0: False, test data 결과를 재현하기 위해서는 retrain을 0으로 하면 됩니다. (default=0)
+  - 이후 주어진 파라미터들에 맞추어 추론이 실행되며, 최종 추천 결과를 포함한 아래의 파일들이 생성됩니다.
+    - test_scores_title_cos_24000/ test_scores_bias_cos: 학습된 autoencoder embedding을 이용하여 train과 test에 각각 속한 playlist 간의 similarity 점수를 저장한 파일
+    - 
+    - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
