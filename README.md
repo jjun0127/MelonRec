@@ -88,3 +88,7 @@
     - num_workers: num workers
     - freq_thr: frequency threshold, 주어진 값 이상의 빈도를 갖는 song들만 사용합니다. (tag는 적용 x)
     - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
+  - 이후 주어진 파라미터들에 맞추어 학습이 실행되며, 아래의 파일들이 생성됩니다.
+    - tag2id/ id2tag: string형태의 tag들을 autoencoder의 input으로 만들기 위해 id로 변환한 결과를 저장한 파일과, 그 반대 과정을 위한 파일
+    - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
+    - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
