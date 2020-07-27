@@ -26,15 +26,20 @@ def get_plylsts_embeddings(_model_file_path, _submit_type, genre=False):
         default_file_path = 'res'
         question_file_path = 'res/val.json'
         train_file_path = 'res/train.json'
+        val_file_path = 'res/val.json'
+        train_dataset = load_json(train_file_path)
     elif _submit_type == 'test':
         default_file_path = 'res'
         question_file_path = 'res/test.json'
         train_file_path = 'res/train.json'
+        val_file_path = 'res/val.json'
+        train_dataset = load_json(train_file_path) + load_json(val_file_path)
     elif _submit_type == 'local_val':
         default_file_path = 'arena_data'
         train_file_path = f'{default_file_path}/orig/train.json'
         question_file_path = f'{default_file_path}/questions/val.json'
         default_file_path = f'{default_file_path}/orig'
+        train_dataset = load_json(train_file_path)
 
     tag2id_file_path = f'{default_file_path}/tag2id_{_submit_type}.npy'
     id2tag_file_path = f'{default_file_path}/id2tag_{_submit_type}.npy'
@@ -42,10 +47,10 @@ def get_plylsts_embeddings(_model_file_path, _submit_type, genre=False):
     id2prep_song_file_path = f'{default_file_path}/id2freq_song_thr2_{_submit_type}.npy'
 
     if genre:
-        train_dataset = SongTagGenreDataset(load_json(train_file_path), tag2id_file_path, prep_song2id_file_path)
+        train_dataset = SongTagGenreDataset(train_dataset, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagGenreDataset(load_json(question_file_path), tag2id_file_path, prep_song2id_file_path)
     else:
-        train_dataset = SongTagDataset(load_json(train_file_path), tag2id_file_path, prep_song2id_file_path)
+        train_dataset = SongTagDataset(train_dataset, tag2id_file_path, prep_song2id_file_path)
         question_dataset = SongTagDataset(load_json(question_file_path), tag2id_file_path, prep_song2id_file_path)
 
     plylst_embed_weight = []
@@ -113,15 +118,20 @@ def save_scores(_autoencoder_embs, _score_type, _submit_type, genre=False):
     if _submit_type == 'val':
         question_file_path = 'res/val.json'
         train_file_path = 'res/train.json'
+        val_file_path = 'res/val.json'
+        train_dataset = load_json(train_file_path)
     elif _submit_type == 'test':
         question_file_path = 'res/test.json'
         train_file_path = 'res/train.json'
+        val_file_path = 'res/val.json'
+        train_dataset = load_json(train_file_path) + load_json(val_file_path)
     elif _submit_type == 'local_val':
         default_file_path = 'arena_data'
         train_file_path = f'{default_file_path}/orig/train.json'
         question_file_path = f'{default_file_path}/questions/val.json'
+        train_dataset = load_json(train_file_path)
 
-    _train = load_json(train_file_path)
+    _train = train_dataset
     _val = load_json(question_file_path)
 
     def pcc(_x, _y):
