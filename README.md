@@ -19,15 +19,17 @@
 **<모델 개요>**
 ![model](https://user-images.githubusercontent.com/50820635/88532187-1a3ddb80-d03f-11ea-8572-13ff9315d9b2.png)
 
-**<STEP 1>** 플레이리스트간 Similarity 계산
+**<STEP 1>** 플레이리스트간 Similarity 계산  
 - AutoEncoder
-- Word2Vec
-**<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산
-- k Nearest Neighbor
-**<STEP 3>** Song 추천, Tag 추천
+- Word2Vec  
+
+**<STEP 2>** 비슷한 플레이리스트로부터 Song Score, Tag Score 계산  
+- k Nearest Neighbor  
+
+**<STEP 3>** Song 추천, Tag 추천  
 - 이미 담겨있는 중복 Song, Tag 제외
 - 플레이리스트 업데이트 시점 이후의 Song 제외
-- Song 100개, Tag 10개가 채워지지 않았다면 Popular로 채우기
+- Song 100개, Tag 10개가 채워지지 않았다면 Popular로 채우기  
 
 ## 3. 개발 환경 및 라이브러리
 ### 1) 개발 환경
