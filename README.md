@@ -61,9 +61,9 @@
 - 코드 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
 - 데이터 다운로드 ([link](https://arena.kakao.com/c/7/data))
 - 모델 다운로드
-  - [test용 모델]()
+  - [test용 모델](https://drive.google.com/file/d/1tAXY8iMpUt-Uft8RWZgi2Mub69-TEaUi/view?usp=sharing)
 - 중간 파일 다운로드
-  - [test용 중간 파일]()
+  - [test용 중간 파일](https://drive.google.com/file/d/1Lr-IxR3kJzhFXYkh03H8aURWwiJkxPPp/view?usp=sharing)
 ~~~
 .
 ├── model
@@ -92,3 +92,5 @@
     - tag2id/ id2tag: string형태의 tag들을 autoencoder의 input으로 만들기 위해 id로 변환한 결과를 저장한 파일과, 그 반대 과정을 위한 파일
     - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
     - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
+- inference.py 실행
+
