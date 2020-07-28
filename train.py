@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # 하이퍼 파라미터 입력
     parser = argparse.ArgumentParser()
     parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=450)
-    parser.add_argument('-epochs', type=int, help="total epochs", default=1)
+    parser.add_argument('-epochs', type=int, help="total epochs", default=41)
     parser.add_argument('-batch_size', type=int, help="batch size", default=256)
     parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.0005)
     parser.add_argument('-dropout', type=float, help="dropout", default=0.2)
