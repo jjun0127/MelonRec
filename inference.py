@@ -49,7 +49,7 @@ if __name__ == '__main__':
         train_file_path = f'{default_file_path}/train.json'
         val_file_path = f'{default_file_path}/val.json'
         test_file_path = f'{default_file_path}/test.json'
-        train_data = load_json(train_file_path) + load_json(val_file_path) + load_json(test_file_path)
+        train_data = load_json(train_file_path) + load_json(val_file_path) + load_json(val_file_path) + load_json(test_file_path)
         question_data = load_json(test_file_path)
         model_file_path = "model/autoencoder_450_256_0.0005_0.2_2_test.pkl"
 
