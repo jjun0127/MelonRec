@@ -84,6 +84,7 @@
 ~~~
 
 ## 5. 코드 실행 방법 & 추천 결과 재현 방법
+### 1) 공개된 test case에 대해 inference할 경우
 **<STEP 1>** `$> python train.py` 실행
   - **4번에서 "test용 모델"을 다운 받으시면 STEP 1은 skip하시면 됩니다.**
   - test.json에 대한 추천결과 재현을 위해 default 값이 설정되어 있습니다.
@@ -114,7 +115,7 @@
     - `test_scores_title_cos_24000.npy`: 학습된 Tokenizer와 Word2Vec 기반으로 계산한 플레이리스트 사이의 Cosine Similarity
     - `results_{종료 시각}_{mode 명}.json`: 최종 추천 결과 파일
     
- #### 새로운 test case에 대해 inference할 경우
-   - <STEP 1> 새롭게 inference할 플레이리스트를 res 폴더 안에 파일 명을 `test.json`으로 하여 넣어주세요.
-   - <STEP 2> scores 폴더 안에 기존 scores 파일들은 삭제해주세요.
-   - <STEP 3> `$> python inference.py` 실행 (test용 모델 사용)
+ ### 2) 새로운 test case에 대해 inference할 경우
+**<STEP 1>** 새롭게 inference할 플레이리스트를 res 폴더 안에 파일 명을 `test.json`으로 하여 넣어주세요.
+**<STEP 2>** scores 폴더 안에 기존 scores 파일들은 삭제해주세요.
+**<STEP 3>** `$> python inference.py` 실행 (test용 모델 사용)
