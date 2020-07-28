@@ -84,7 +84,8 @@
 ~~~
 
 ## 5. 코드 실행 방법 & 추천 결과 재현 방법
-**<STEP 1>** train.py 실행 __(추천 결과 재현이 목적인 경우, 4번에서 test용 모델을 다운 받으시면 step 1은 skip하시면 됩니다.)__
+**코드 실행의 결과로 생성되는 모델과 중간 파일들의 이름이 test용 모델과 test용 중간 파일과 같으니, 이를 유의해서 진행해주세요.**
+**<STEP 1>** train.py 실행 **(추천 결과 재현이 목적인 경우, 4번에서 test용 모델을 다운 받아주시고, step 1은 skip하시면 됩니다.)**
   - 개발 환경이 갖추어진 상태에서 autoencoder를 학습시키기 위해서 train.py를 실행합니다.
   - 하이퍼 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 모델 튜닝에 사용한 하이퍼 파라미터들 입니다.
     - dimensions: size of hidden layer dimension
@@ -100,7 +101,7 @@
     - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
     - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.  
     
-**<STEP 2>** inference.py 실행
+**<STEP 2>** inference.py 실행 **(추천 결과 재현이 목적인 경우, 4번에서 test용 중간 파일을 다운 받으신 후 진행해 주세요.)**
   - train 과정을 거쳐 학습된 모델들을 가지고 inference.py를 실행합니다.
   - 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 옵션별 파라미터들 입니다.
     - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
