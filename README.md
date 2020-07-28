@@ -58,26 +58,32 @@
 - pytorch 1.5.1
 
 ## 4. 폴더 및 파일
-- 코드 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
-- 데이터 다운로드 ([link](https://arena.kakao.com/c/7/data))
-- 모델 다운로드
+- '코드' 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
+- '데이터' 다운로드 ([link](https://arena.kakao.com/c/7/data))
+  - train.json, val.json, test.json, genre_gn_all.json, song_meta.json 파일 다운
+  - arena_mel_n.tar 파일들은 다운 x
+- '모델' 다운로드
   - [test용 모델](https://drive.google.com/file/d/1tAXY8iMpUt-Uft8RWZgi2Mub69-TEaUi/view?usp=sharing)
-- 중간 파일 다운로드
+- '중간 파일' 다운로드
   - [test용 중간 파일](https://drive.google.com/file/d/1Lr-IxR3kJzhFXYkh03H8aURWwiJkxPPp/view?usp=sharing)
 ~~~
 .
 ├── model
+│   └── 다운로드한 '모델' 파일들을 넣어주세요.
 ├── res
+│   └── 다운로드한 '데이터' 파일들을 넣어주세요.
 ├── results
 ├── scores
-└── arena_data
-    ├── answers
-    ├── orig
-    └── questions
+│   └── 다운로드한 '중간파일' 넣어주세요.
+├── arena_data
+│   ├── answers
+│   ├── orig
+│   └── questions
+└── 다운로드한 '코드' 파일들을 넣어주세요. 
 ~~~
 
 ## 5. 추천 결과 재현 방법
-- train.py 실행
+**<STEP 1>** train.py 실행
   - 개발 환경이 갖추어진 상태에서 train.py를 실행합니다.
   - 하이퍼 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 모델 튜닝에 사용한 하이퍼 파라미터들 입니다.
     - dimensions: size of hidden layer dimension
@@ -92,7 +98,7 @@
     - tag2id/ id2tag: string형태의 tag들을 autoencoder의 input으로 만들기 위해 id로 변환한 결과를 저장한 파일과, 그 반대 과정을 위한 파일
     - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
     - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
-- inference.py 실행
+**<STEP 2>** inference.py 실행
   - train 과정을 거쳐 학습된 모델들을 가지고 inference.py를 실행합니다.
   - 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 옵션별 파라미터들 입니다.
     - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
