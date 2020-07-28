@@ -64,7 +64,7 @@
   - arena_mel_n.tar 파일들은 다운 x
 - '모델' 다운로드
   - [test용 모델](https://drive.google.com/file/d/1tAXY8iMpUt-Uft8RWZgi2Mub69-TEaUi/view?usp=sharing)
-- '중간 파일' 다운로드
+- '중간 파일' 다운로드 (빠른 추론을 위한 것으로 모델 크기 제한 1GB에 포함되지 않습니다)
   - [test용 중간 파일](https://drive.google.com/file/d/1Lr-IxR3kJzhFXYkh03H8aURWwiJkxPPp/view?usp=sharing)
 ~~~
 .
@@ -97,7 +97,8 @@
   - 이후 주어진 파라미터들에 맞추어 학습이 실행되며, 아래의 파일들이 생성됩니다.
     - tag2id/ id2tag: string형태의 tag들을 autoencoder의 input으로 만들기 위해 id로 변환한 결과를 저장한 파일과, 그 반대 과정을 위한 파일
     - freq_song2id/ id2freq_song: freq_thr를 만족하는 song들의 id가 연속되지 않기 때문에, 연속한 새로운 id를 부여하고, 그 반대 과정을 위한 파일
-    - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
+    - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.  
+    
 **<STEP 2>** inference.py 실행
   - train 과정을 거쳐 학습된 모델들을 가지고 inference.py를 실행합니다.
   - 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 옵션별 파라미터들 입니다.
