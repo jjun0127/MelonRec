@@ -84,7 +84,7 @@
 ~~~
 
 ## 5. 코드 실행 방법 & 추천 결과 재현 방법
-**<STEP 1>** $> `python train.py`
+**<STEP 1>** `$> python train.py`
   - test.json에 대한 추천결과 재현을 위해 default 값이 설정되어 있습니다.
   - **4번에서 `test용 모델`을 다운 받으시면 STEP 1은 skip하시면 됩니다.**
   - 입력 인자 
@@ -100,11 +100,11 @@
     - `freq_song2id`, `id2freq_song`, `tag2id`, `id2tag`: Song One-hot Vector, Tag One-hot Vector를 만들기 위한 파일
     - `autoencoder_{}_{}_{}_{}_{}_{}.pkl`: 학습된 AutoEncoder 모델 파일
     
-**<STEP 2>** `python inference.py`
+**<STEP 2>** `$> python inference.py`
   - test.json에 대한 추천결과 재현을 위해 default 값이 설정되어 있습니다.
   - 입력 인자 
-    - `mode`: local_val: 0, val: 1, test: 2 (default=2)
-    - `retrain`: remove tokenizer&w2v model and retrain - 1: True, 0: False (default=0)
+    - `mode`: local_val: 0 / val: 1 / test: 2 (default=2)
+    - `retrain`: remove tokenizer & w2v model and retrain (1: True / 0: False) (default=0)
   - 출력 파일
     - `tokenizer_{}_{}_{}.model`, `w2v_{}_{}_{}.model`: 학습된 Tokenizer와 Word2Vec 모델 파일
     - `test_scores_bias_cos.npy`: 학습된 AutoEncoder 기반으로 계산한 플레이리스트 사이의 Cosine Similarity
