@@ -60,13 +60,13 @@
 ## 4. 폴더 및 파일
 - '코드' 다운로드 ([link](https://github.com/jjun0127/melon_autoencoder/archive/master.zip))
 - '데이터' 다운로드 ([link](https://arena.kakao.com/c/7/data))
-  - train.json, val.json, test.json, genre_gn_all.json, song_meta.json 파일 다운
+  - `train.json`, `val.json`, `test.json`, `genre_gn_all.json`, `song_meta.json` 파일 다운
   - arena_mel_n.tar 파일들은 다운 x
 - '모델' 다운로드
   - [test용 모델](https://drive.google.com/file/d/1tAXY8iMpUt-Uft8RWZgi2Mub69-TEaUi/view?usp=sharing)
 - '중간 파일' 다운로드
   - [test용 중간 파일](https://drive.google.com/file/d/1Lr-IxR3kJzhFXYkh03H8aURWwiJkxPPp/view?usp=sharing)
-  - 빠른 추론을 위한 것으로 모델 크기 제한 1GB에 포함되지 않습니다
+  - 빠른 추론을 위한 것으로 모델 크기 제한 1GB에 포함되지 않습니다.
 ~~~
 .
 ├── model
