@@ -1,0 +1,5 @@
+https://arena.kakao.com/c/7/data
+
+train.json, val.json, test.json, genre_gn_all.json, song_meta.json 파일 다운
+
+arena_mel_n.tar 파일들은 다운 x
