@@ -116,7 +116,7 @@
     - `results_{종료 시각}_{mode 명}.json`: 최종 추천 결과 파일
     
  ### 2) 새로운 test case에 대해 inference할 경우
-**<STEP 1>** test용으로 학습된 모델을 사용하므로 train.py를 실행할 필요가 없습니다. 
+**<STEP 1>** test용으로 1)에서 학습된 모델을 사용하므로 train.py를 실행할 필요가 없습니다. 
   
 **<STEP 2>** 새롭게 inference할 플레이리스트를 res 폴더 안에 파일 명을 `test.json`으로 하여 넣어주세요.  
 
