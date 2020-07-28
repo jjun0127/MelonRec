@@ -16,11 +16,8 @@ freq_thr = 2
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-mode', type=int, help="local_val: 0, val: 1, test: 2", default=2)
-    parser.add_argument('-retrain', type=int, help="remove tokenizer&w2v model and retrain 1: True, 0: False",
-                        default=0)
     args = parser.parse_args()
     _submit_type = args.mode
-    _retrain = args.retrain
 
     if _submit_type == 0:  # split data에 대해서는 훈련 중간 중간 성능 확인을 위해서 question, answer 불러옴
         default_file_path = 'arena_data/'
