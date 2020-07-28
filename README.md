@@ -116,6 +116,6 @@
     - `results_{종료 시각}_{mode 명}.json`: 최종 추천 결과 파일
     
  ### 2) 새로운 test case에 대해 inference할 경우
-**<STEP 1>** 새롭게 inference할 플레이리스트를 res 폴더 안에 파일 명을 `test.json`으로 하여 넣어주세요.
-**<STEP 2>** scores 폴더 안에 기존 scores 파일들은 삭제해주세요.
-**<STEP 3>** `$> python inference.py` 실행 (test용 모델 사용)
+**<STEP 1>** 새롭게 inference할 플레이리스트를 res 폴더 안에 파일 명을 `test.json`으로 하여 넣어주세요.  
+**<STEP 2>** scores 폴더 안에 기존 scores 파일들은 삭제해주세요.  
+**<STEP 3>** `$> python inference.py` 실행 (test용 모델 사용)  
