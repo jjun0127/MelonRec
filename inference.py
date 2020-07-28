@@ -79,14 +79,11 @@ if __name__ == '__main__':
             or (not os.path.exists(w2v_model_path)):
         print("Error: there is no autoencoder model. Please execute train.py first")
         sys.exit(1)
-    if _retrain:
+
+    if (not os.path.exists(auto_score_file_path + '.npy')) or (not os.path.exists(auto_score_file_path + '_gnr.npy')):
         get_autoencoder_scores(model_file_path, model_postfix)
-        get_w2v_scores(model_postfix, _retrain)
-    else:
-        if (not os.path.exists(auto_score_file_path + '.npy')) or (not os.path.exists(auto_score_file_path + '_gnr.npy')):
-            get_autoencoder_scores(model_file_path, model_postfix)
-        if not os.path.exists(w2v_score_file_path + '.npy'):
-            get_w2v_scores(model_postfix, _retrain)
+    if not os.path.exists(w2v_score_file_path + '.npy'):
+        get_w2v_scores(model_postfix)
 
     song_meta = load_json('res/song_meta.json')
     prep_song2id = dict(np.load(prep_song2id_file_path, allow_pickle=True).item())
