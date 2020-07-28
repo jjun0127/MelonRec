@@ -98,6 +98,8 @@
     - mode: local_val: 0, val: 1, test: 2, test data 결과를 재현하기 위해서는 mode를 2로 하면 됩니다. (default=2)
     - retrain: remove tokenizer&w2v model and retrain 1: True, 0: False, test data 결과를 재현하기 위해서는 retrain을 0으로 하면 됩니다. (default=0)
   - 이후 주어진 파라미터들에 맞추어 추론이 실행되며, 최종 추천 결과를 포함한 아래의 파일들이 생성됩니다.
-    - test_scores_title_cos_24000/ test_scores_bias_cos: 학습된 autoencoder embedding을 이용하여 train과 test에 각각 속한 playlist 간의 similarity 점수를 저장한 파일
-    - 
-    - autoencoder_{}_{}_{}_{}_{}_{}.pkl: 주어진 하이퍼 파라미터들이 파일명으로 적힌 최종 모델 파일입니다.
+    - tokenizer_{}_{}_{}.model, w2v_{}_{}_{}.model: 학습된 tokenizer와 w2v 모델
+    - test_scores_title_cos_24000.npy: 학습된 tokenizer와 w2v embedding을 기반으로 계산한 train과 test에 각각 속한 playlist 간의 cosine similarity 점수를 저장한 파일
+    - test_scores_bias_cos.npy: 학습된 autoencoder embedding을 기반으로 계산한 train과 test에 각각 속한 playlist 간의 cosine similarity 점수를 저장한 파일
+    - test_scores_bias_cos_gnr.npy: 학습된 autoencoder embedding에 genre 정보를 추가하여 계산한 train과 test에 각각 속한 playlist 간의 cosine similarity 점수를 저장한 파일
+    - results_{}_{}.json: 생성된 시간과 mode들이 파일명으로 적힌 최종 추천 결과 파일입니다.
