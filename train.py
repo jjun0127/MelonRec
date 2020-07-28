@@ -9,6 +9,7 @@ import numpy as np
 from torch.utils.data import DataLoader
 from MelonDataset import SongTagDataset
 from Models import AutoEncoder
+from w2v import train_tokenizer_w2v
 
 from evaluate import ArenaEvaluator
 from data_util import tags_ids_convert, save_freq_song_id_dict, binary_songs2ids, binary_tags2ids
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     # 하이퍼 파라미터 입력
     parser = argparse.ArgumentParser()
     parser.add_argument('-dimension', type=int, help="hidden layer dimension", default=450)
-    parser.add_argument('-epochs', type=int, help="total epochs", default=41)
+    parser.add_argument('-epochs', type=int, help="total epochs", default=1)
     parser.add_argument('-batch_size', type=int, help="batch size", default=256)
     parser.add_argument('-learning_rate', type=float, help="learning rate", default=0.0005)
     parser.add_argument('-dropout', type=float, help="dropout", default=0.2)
@@ -183,5 +184,49 @@ if __name__ == "__main__":
         format(H, batch_size, learning_rate, dropout, freq_thr, model_postfix)
     
     train(train_dataset, model_file_path, id2prep_song_file_path, id2tag_file_path, question_dataset, answer_file_path)
+
+    # w2v 학습 시작
+    vocab_size = 24000
+    method = 'bpe'
+    if model_postfix == 'val':
+        default_file_path = 'res'
+        question_file_path = 'res/val.json'
+        train_file_path = 'res/train.json'
+    elif model_postfix == 'test':
+        default_file_path = 'res'
+        val_file_path = 'res/val.json'
+        question_file_path = 'res/test.json'
+        train_file_path = 'res/train.json'
+    elif model_postfix == 'local_val':
+        default_file_path = 'arena_data'
+        train_file_path = f'{default_file_path}/orig/train.json'
+        question_file_path = f'{default_file_path}/questions/val.json'
+        default_file_path = f'{default_file_path}/orig'
+
+    genre_file_path = 'res/genre_gn_all.json'
+
+    tokenize_input_file_path = f'model/tokenizer_input_{method}_{vocab_size}_{model_postfix}.txt'
+
+    if model_postfix == 'local_val':
+        val_file_path = None
+        test_file_path = None
+        train = load_json(train_file_path)
+        question = load_json(question_file_path)
+    elif model_postfix == 'val':
+        test_file_path = None
+        val_file_path = question_file_path
+        train = load_json(train_file_path)
+        question = load_json(question_file_path)
+    elif model_postfix == 'test':
+        val_file_path = val_file_path
+        test_file_path = question_file_path
+        train = load_json(train_file_path)
+        val = load_json(val_file_path)
+        test = load_json(test_file_path)
+        train = train + val
+        question = test
+
+    train_tokenizer_w2v(train_file_path, val_file_path, test_file_path, genre_file_path, tokenize_input_file_path,
+                        model_postfix)
 
     print('train completed')
