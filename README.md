@@ -84,7 +84,7 @@
 ~~~
 
 ## 5. 추천 결과 재현 방법
-**<STEP 1>** train.py 실행 (4번에서 test용 모델을 다운 받으시면, step 1은 진행할 필요가 없으므로 skip합니다.)
+**<STEP 1>** train.py 실행 __(4번에서 test용 모델을 다운 받으시면, step 1은 진행할 필요가 없으므로 skip합니다.)__
   - 개발 환경이 갖추어진 상태에서 autoencoder를 학습시키기 위해서 train.py를 실행합니다.
   - 하이퍼 파라미터들은 제출 시 사용한 값이 default 로 설정 되어있습니다. 아래는 모델 튜닝에 사용한 하이퍼 파라미터들 입니다.
     - dimensions: size of hidden layer dimension
