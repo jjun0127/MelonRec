@@ -73,7 +73,10 @@ if __name__ == '__main__':
     prep_song2id_file_path = f'{default_file_path}/freq_song2id_thr{freq_thr}_{model_postfix}.npy'
     id2prep_song_file_path = f'{default_file_path}/id2freq_song_thr{freq_thr}_{model_postfix}.npy'
 
-    if not os.path.exists(model_file_path):
+    tokenizer_model_path = 'model/tokenizer_bpe_24000_{}.model'.format(model_postfix)
+    w2v_model_path = 'model/w2v_bpe_24000_{}.model'.format(model_postfix)
+    if (not os.path.exists(model_file_path)) or (not os.path.exists(tokenizer_model_path)) \
+            or (not os.path.exists(w2v_model_path)):
         print("Error: there is no autoencoder model. Please execute train.py first")
         sys.exit(1)
     if _retrain:
