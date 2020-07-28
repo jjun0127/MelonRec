@@ -158,7 +158,7 @@ def save_scores(_train, _question, _autoencoder_embs, _score_type, _submit_type)
         np.save(f'scores/test_scores_title_{_score_type}_24000', results)
 
 
-def get_w2v_scores(submit_type, _retrain):
+def get_w2v_scores(submit_type):
     if submit_type == 'val':
         default_file_path = 'res'
         question_file_path = 'res/val.json'
