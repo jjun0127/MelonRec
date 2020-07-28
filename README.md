@@ -99,7 +99,7 @@
   - 출력 파일
     - `freq_song2id`, `id2freq_song`,: Song One-hot Vector 생성을 위한 파일
     - `tag2id`, `id2tag`: Tag One-hot Vector 생성을 위한 파일
-    - `autoencoder_{}_{}_{}_{}_{}_{}.pkl`: 학습된 AutoEncoder 모델 파일
+    - `autoencoder_{}_{}_{}_{}_{}_{mode 명}.pkl`: 학습된 AutoEncoder 모델 파일
     
 **<STEP 2>** `$> python inference.py` 실행
   - **4번에서 "test용 중간 파일"을 다운 받으시면 빠른 추론이 가능합니다.**
@@ -108,8 +108,8 @@
     - `mode`: local_val: 0 / val: 1 / test: 2 (default=2)
     - `retrain`: remove tokenizer & w2v model and retrain (1: True / 0: False) (default=0)
   - 출력 파일
-    - `tokenizer_{}_{}_{}.model`, `w2v_{}_{}_{}.model`: 학습된 Tokenizer와 Word2Vec 모델 파일
+    - `tokenizer_{}_{}_{mode 명}.model`, `w2v_{}_{}_{mode 명}.model`: 학습된 Tokenizer와 Word2Vec 모델 파일
     - `test_scores_bias_cos.npy`: 학습된 AutoEncoder 기반으로 계산한 플레이리스트 사이의 Cosine Similarity
     - `test_scores_bias_cos_gnr.npy`: 학습된 AutoEncoder 기반에 장르 정보를 추가하여 계산한 플레이리스트 사이의 Cosine Similarity
     - `test_scores_title_cos_24000.npy`: 학습된 Tokenizer와 Word2Vec 기반으로 계산한 플레이리스트 사이의 Cosine Similarity
-    - `results_{}_{}.json`: 최종 추천 결과 파일 _(파일 명: results + 종료 시각 + mode)_
+    - `results_{종료 시각}_{mode 명}.json`: 최종 추천 결과 파일
